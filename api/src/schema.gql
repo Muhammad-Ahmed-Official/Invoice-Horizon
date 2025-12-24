@@ -1,0 +1,52 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type LoginResponse {
+  user: SignupResponse!
+}
+
+input LoginUserInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  forgotPassword(email: String!): SignupResponse!
+  login(loginUserInput: LoginUserInput!): LoginResponse!
+  logout: Boolean!
+  resendOtp(email: String!): SignupResponse!
+  signUp(SignupUserInput: SignupUserInput!): SignupResponse!
+  updatePassword(newPassword: String!, oldPassword: String!, token: String!): SignupResponse!
+  verifyEmail(email: String!, otp: Int!): SignupResponse!
+}
+
+type Query {
+  healthCheck: String!
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+type SignupResponse {
+  accessToken: String!
+  email: String!
+  id: ID!
+  isVerified: Boolean!
+  message: String!
+  name: String!
+  otp: Int!
+  role: Role!
+  succes: Boolean!
+}
+
+input SignupUserInput {
+  email: String!
+  isVerified: Boolean
+  name: String!
+  password: String!
+  role: Role
+  secretToken: String
+}
