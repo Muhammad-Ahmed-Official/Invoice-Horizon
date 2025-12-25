@@ -1,10 +1,10 @@
-import { NestFactory } from '@nestjs/core';
-import { HttpAdapterHost } from '@nestjs/core';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
 import { HttpExceptionFilter } from './filters/http-exception/http-exception.filter';
 import { ResponseInterceptor } from './filters/response-interceptor/response-interceptor.filter';
-import { ValidationPipe } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +31,5 @@ async function bootstrap() {
 bootstrap();
 
 // const httpAdapterHost = app.get(HttpAdapterHost);
-
 // app.useGlobalInterceptors(new ResponseInterceptor())
 // app.useGlobalFilters(new HttpExceptionFilter());

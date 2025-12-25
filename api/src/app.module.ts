@@ -13,7 +13,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 
 @Module({
   imports: [
-      ConfigModule.forRoot({ isGlobal: true }),
+      ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
       GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       csrfPrevention: false,
@@ -35,7 +35,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
       buildSchemaOptions: {
         numberScalarMode: 'integer',
       },
-       plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
       context: ({ req, res }) => ({ req, res }),
     }),
     PrismaModule, AuthModule

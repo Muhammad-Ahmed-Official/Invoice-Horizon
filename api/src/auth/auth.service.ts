@@ -1,13 +1,12 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User } from 'src/generated/prisma/client';
 import { JwtService } from '@nestjs/jwt';
-import { SignupUserInput, UpdatePasswordInput } from './dto/signUp-user';
+import { SignupUserInput } from './dto/signUp-user';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role } from 'src/guards/roles/roles.enum';
 import bcrypt from 'bcrypt'
-import { resendOtpEmail, sendEmail } from 'email/emailService';
 import { ConfigService } from '@nestjs/config';
-import { createHash, randomBytes } from 'crypto';
+import { EmailService } from 'email/emailService';
 
 @Injectable()
 export class AuthService {
@@ -17,35 +16,41 @@ export class AuthService {
         private readonly configService: ConfigService
     ){}
 
+    
     async signUp(input: SignupUserInput) {
-        const isExistUser = await this.prisma.user.findUnique({ where: { email: input.email }});
-        if(isExistUser) throw new ConflictException('User already exists');
-
-        if (input.role === Role.ADMIN && input.secretToken !== this.configService.get('SECRET_TOKEN')) {
-        throw new ForbiddenException('Admin creation not allowed');
+        try {
+            const isExistUser = await this.prisma.user.findUnique({ where: { email: input.email }});
+            if(isExistUser) throw new ConflictException('User already exists');
+            
+            if (input.role === Role.ADMIN && input.secretToken !== this.configService.get('SECRET_TOKEN')) {
+                throw new ForbiddenException('Admin creation not allowed');
+            }
+            
+            const hashedPassword = await bcrypt.hash(input.password, 10);
+            const otp = Math.floor(100000 + Math.random() * 900000);
+            const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+            
+            const user = await this.prisma.user.create({
+                data: {
+                    name: input.name,
+                    email: input.email,
+                    password: hashedPassword,
+                    role: input.role as Role,
+                    otp,
+                    otpExpiry,
+                    isVerified: false,
+                }
+            });
+            
+            if (input.role !== Role.ADMIN) {
+                const emailService = new EmailService(this.configService); 
+                await emailService.sendEmail(input.email, otp); 
+            };
+    
+            return user;
+        } catch (error) {
+            throw error;
         }
-
-        const hashedPassword = await bcrypt.hash(input.password, 10);
-        const otp = Math.floor(100000 + Math.random() * 900000);
-        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
-
-        const user = await this.prisma.user.create({
-        data: {
-            name: input.name,
-            email: input.email,
-            password: hashedPassword,
-            role: input.role as Role,
-            otp,
-            otpExpiry,
-            isVerified: false,
-        }
-        });
-
-        // if (input.role !== Role.ADMIN) {
-        //     await sendEmail(input.email, otp);
-        // };
-
-        return user;
     };
 
 
@@ -91,11 +96,12 @@ export class AuthService {
         if(user.otpExpiry! < new Date) {
             const otp = Math.floor(100000 + Math.random() * 900000);
             const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
-            const mailSend = resendOtpEmail(email, otp);
-            (await mailSend).success && await this.prisma.user.update({ where: { email }, data: { otp, otpExpiry } });
+            const emailService = new EmailService(this.configService); 
+            await emailService.resendOtpEmail(email, otp); 
+            await this.prisma.user.update({ where: { email }, data: { otp, otpExpiry } });
         }
 
-        return { succes: true, message: "OTP resend successfully" };
+        return { success: true, message: "OTP resend successfully" };
     };
 
 
@@ -106,11 +112,12 @@ export class AuthService {
 
         const token = this.jwtService.sign({ sub: userId }, { expiresIn: '15m' });
 
-        const resetUrl = `${process.env.RESET_LINK}/reset-password?token=${token}`;
-        console.log(resetUrl);
+        const resetLink = `${process.env.RESET_LINK}/reset-password?token=${token}`;
+        // console.log(resetLink);
 
-        // sendEmail(email, resetUrl)
-        return { succes: true, message: 'Password reset link sent to email' };
+        const emailService = new EmailService(this.configService);
+        await emailService.forgotPasswordEmail(email, resetLink) 
+        return { success: true, message: 'Password reset link sent to email' };
     }
 
 
@@ -144,7 +151,7 @@ export class AuthService {
         });
 
         return {
-            succes: true,
+            success: true,
             message: 'Password updated successfully',
         };
     }

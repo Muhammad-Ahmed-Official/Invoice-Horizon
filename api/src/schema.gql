@@ -12,17 +12,22 @@ input LoginUserInput {
 }
 
 type Mutation {
-  forgotPassword(email: String!): SignupResponse!
+  forgotPassword(email: String!): Response!
   login(loginUserInput: LoginUserInput!): LoginResponse!
   logout: Boolean!
-  resendOtp(email: String!): SignupResponse!
-  signUp(SignupUserInput: SignupUserInput!): SignupResponse!
-  updatePassword(newPassword: String!, oldPassword: String!, token: String!): SignupResponse!
+  resendOtp(email: String!): Response!
+  signUp(signupUserInput: SignupUserInput!): SignupResponse!
+  updatePassword(newPassword: String!, oldPassword: String!, token: String!): Response!
   verifyEmail(email: String!, otp: Int!): SignupResponse!
 }
 
 type Query {
   healthCheck: String!
+}
+
+type Response {
+  message: String!
+  success: Boolean!
 }
 
 enum Role {

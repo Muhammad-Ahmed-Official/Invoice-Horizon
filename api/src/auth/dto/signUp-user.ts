@@ -34,13 +34,3 @@ export class SignupUserInput {
   @IsOptional()
   isVerified?: boolean;
 }
-
-
-@InputType()
-export class UpdatePasswordInput {
-  @Field()
-  oldPassword: string;
-
-  @Field()
-  newPassword: string;
-}
