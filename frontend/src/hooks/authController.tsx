@@ -1,12 +1,12 @@
 'use client'
 
-import { SignupForm } from "@/app/(auth)/signup/page";
-import { SignInForm } from "@/app/(auth)/signin/page";
+import  SignupForm  from "@/app/(auth)/sign-up/page";
+import SignInForm from "@/app/(auth)/sign-in/page";
 import { AuthModal } from "@/app/components/ui/auth-modal";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { ForgotPasswordForm } from "@/app/(auth)/forgot-password/page";
-import { VerifyEmail } from "@/app/(auth)/verify-email/page";
+import ForgotPasswordForm from "@/app/(auth)/forgot-password/page";
+import VerifyEmail from "@/app/(auth)/verify-email/page";
 
 type AuthState = "login" | "signup" | "forgot-password" | "otp-verification" | "reset-password";
 
@@ -17,11 +17,7 @@ interface AuthControllerProps {
 }
 // hey there i really like your post today this what i think about it 
 
-export const AuthController: React.FC<AuthControllerProps> = ({
-  isOpen,
-  onClose,
-  initialState = "login",
-}) => {
+export const AuthController = ({ isOpen, onClose,initialState = "login" } : AuthControllerProps) => {
   const [authState, setAuthState] = useState<AuthState>(initialState);
   const [resetEmail, setResetEmail] = useState("");
 
@@ -31,20 +27,14 @@ export const AuthController: React.FC<AuthControllerProps> = ({
     }
   }, [isOpen, initialState]);
 
-//   const handleLoginSuccess = () => {
-//     toast({
-//       title: "Welcome back!",
-//       description: "You have successfully signed in.",
-//     });
-//     onClose();
-//   };
-//   const handleSignupSuccess = () => {
-//     toast({
-//       title: "Account created!",
-//       description: "Welcome to La Maison. Your account is ready.",
-//     });
-//     onClose();
-//   };
+  const handleClose = () => {
+    onClose();
+  };
+  const handleSignupSuccess = (email: string) => {
+    setResetEmail(email);
+    setAuthState("otp-verification");
+  };
+  
 //   const handleForgotPasswordSuccess = (email: string) => {
 //     setResetEmail(email);
 //     setAuthState("otp-verification");
@@ -67,14 +57,14 @@ export const AuthController: React.FC<AuthControllerProps> = ({
           <SignInForm
             onSwitchToSignup={() => setAuthState("signup")}
             onSwitchToForgotPassword={() => setAuthState("forgot-password")}
-            // onSuccess={handleLoginSuccess}
+            onSuccess={handleClose}
           />
         );
       case "signup":
         return (
           <SignupForm
             onSwitchToLogin={() => setAuthState("login")}
-            // onSuccess={handleSignupSuccess}
+            onSuccess={handleSignupSuccess}
           />
         );
       case "forgot-password":
@@ -87,8 +77,8 @@ export const AuthController: React.FC<AuthControllerProps> = ({
         return (
           <VerifyEmail
             email={resetEmail}
-            onSwitchToForgotPassword={() => setAuthState("forgot-password")}
-            // onSuccess={handleOTPSuccess}
+            // onSwitchToForgotPassword={() => setAuthState("forgot-password")}
+            onSuccess={handleClose}
           />
         );
       

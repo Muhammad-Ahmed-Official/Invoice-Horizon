@@ -1,6 +1,6 @@
 'use client'
 
-import { UserPlus, Loader2, Lock, Mail, User, Loader, Check } from "lucide-react";
+import { UserPlus, Lock, Mail, User, Loader, Check, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { AuthFormWrapper } from "@/app/components/ui/auth-modal";
 import { useEffect, useState } from "react";
@@ -12,17 +12,20 @@ import { signUpSchema } from "@/features/auth/schemas/signUpSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
 import { useDebounceCallback } from "usehooks-ts";
+import { apiClient } from "@/lib/apiClient";
+import toast from "react-hot-toast";
 
 interface SignupFormProps {
   onSwitchToLogin: () => void;
+  onSuccess: (email: string) => void;
 }
 
- export const SignupForm = ({ onSwitchToLogin } : SignupFormProps ) => {
+export default function SignupForm ({ onSwitchToLogin, onSuccess } : SignupFormProps ) {
   const [showPassword, setShowPassword] = useState(false);
   const {register, reset, handleSubmit, watch, formState: { isSubmitting, errors } } = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      userName: "",
+      name: "",
       email: "",
       password: "",
     }
@@ -30,7 +33,7 @@ interface SignupFormProps {
 
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [userNameMessage, setUserNameMessage] = useState('');
-  const userName = watch("userName");
+  const userName = watch("name");
   const debouncedCheck = useDebounceCallback(async(value:string) => {
     if (!value) return;
     setIsCheckingUsername(true);
@@ -57,10 +60,13 @@ interface SignupFormProps {
   const onSubmit = async(data: z.infer<typeof signUpSchema>) => {
     await asyncHandlerFront(
       async() => {
-
+        console.log(data);
+        await apiClient.signUp(data);
+        toast.success('Account created successfully');
+        onSuccess(data.email);
       },
       (error) => {
-
+        toast.error(error.message)
       }
     )
     reset()
@@ -68,7 +74,8 @@ interface SignupFormProps {
 
 
   return (
-    <AuthFormWrapper>
+    <div className="w-full lg:w-1/3 m-auto items-center justify-center p-8">
+    {/* <AuthFormWrapper> */}
       <div className="text-center mb-8">
         <h2 className="text-2xl font-display font-bold text-foreground mb-2"> Create Account </h2>
         <p className="text-muted-foreground"> Join us for an exceptional dining experience </p>
@@ -80,17 +87,17 @@ interface SignupFormProps {
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
-                    id="userName"
+                    id="name"
                     placeholder="yourname"
                     className="pl-10"
-                    {...register('userName')}
+                    {...register('name')}
                   />
 
-                  {isCheckingUsername && (
+                  {/* {isCheckingUsername && (
                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
                       <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
                     </div>
-                  )}
+                  )} */}
                 </div>
 
                 {userNameMessage && (
@@ -101,7 +108,7 @@ interface SignupFormProps {
                       <p className={`text-sm ${userNameMessage === 'userName is available' ? 'text-green-400' : 'text-red-400'}`}>
                         {userNameMessage}
                       </p>
-                      {errors.userName && ( <p className="mt-1 text-sm text-red-600">{errors.userName.message}</p>)}
+                      {errors.name && ( <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>)}
                     </div>
                 )}
               </div>
@@ -138,14 +145,15 @@ interface SignupFormProps {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
               {errors.password && ( <p className="text-sm text-red-500">{errors.password.message}</p> )}
             </div>
 
             <Button disabled={isSubmitting} type="submit" variant="gold" size="lg" className="w-full group cursor-pointer">
-              {!isSubmitting ? "Create Account" : "Account Creating...."} 
-              {!isSubmitting ? <UserPlus className="w-5 h-5" /> : <Loader className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+              {!isSubmitting ? "Create Account" : "Account Creating... "} 
+              {!isSubmitting ? <UserPlus className="w-5 h-5" /> : <Loader className="w-5 h-5 animate-spin " />}
             </Button>
           </form>
 
@@ -194,14 +202,12 @@ interface SignupFormProps {
       <div className="mt-6 text-center">
         <p className="text-muted-foreground">
           Already have an account?{" "}
-          <button
-            onClick={onSwitchToLogin}
-            className="text-primary font-medium hover:underline"
-          >
+          <button onClick={onSwitchToLogin} className="text-primary font-medium hover:underline" >
             Sign In
           </button>
         </p>
       </div>
-    </AuthFormWrapper>
+    {/* </AuthFormWrapper> */}
+    </div>
   );
 };

@@ -24,13 +24,12 @@ export class AuthResolver {
         const { user } = ctx.req;
         const { access_token }= await this.authService.login(user);
         ctx.res.cookie('access_token', access_token, {
-            httpOnly: true,
-            // secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            secure: false,
+            httpOnly: true,    // Cookie can't be accessed via JavaScript
+            sameSite: "none", // Only set to true in production (use HTTPS)
+            secure: true,     // Ensure it works with cross-site cookies
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-
+        // secure: process.env.NODE_ENV === 'production',
         return {
             success: true,
             user,
@@ -67,9 +66,11 @@ export class AuthResolver {
         return true;
     }
 
-    @Query(() => String)
-    healthCheck(): string {
-      return 'API is running!';
+    @Query(() => SignupResponse, { nullable: true })
+    @UseGuards(JwtAuthGuard)
+    me(@Context() ctx) {
+        return ctx.req.user;
     }
+
     
 }

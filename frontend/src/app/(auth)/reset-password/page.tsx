@@ -8,6 +8,8 @@ import { Label } from "@/app/components/ui/label";
 import { Input } from "@/app/components/ui/input";
 import { useForm } from "react-hook-form";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
+import { apiClient } from "@/lib/apiClient";
+import toast from "react-hot-toast";
 
 export default function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,18 +23,16 @@ export default function ResetPasswordForm() {
   const onSubmit = async(data:any) => {
     await asyncHandlerFront(
         async() => {
-          
+          await apiClient.updatePassword(data.oldPassword, data.newPassword)
         },
-        (error:any) => {
-          // toast.error("Failed to login", error)
-        }
+        (error) => toast.error(error.message)
     )
     reset()
   };
 
   let isSuccess
 
-  if (!isSuccess) {
+  if (isSuccess) {
     return (
       <div className="w-full lg:w-1/3 m-auto items-center justify-center p-8">
         <motion.div

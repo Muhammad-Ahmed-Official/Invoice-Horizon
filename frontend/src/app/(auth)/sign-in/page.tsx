@@ -8,18 +8,20 @@ import { useState } from "react";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useForm } from "react-hook-form";
-import z from "zod";
 import { signInSchema } from "@/features/auth/schemas/signInSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
+import toast from "react-hot-toast";
+import z from "zod";
+import { apiClient } from "@/lib/apiClient";
 
 interface LoginFormProps {
   onSwitchToSignup: () => void;
   onSwitchToForgotPassword: () => void;
-//   onSuccess: () => void;
+  onSuccess: () => void;
 }
 
-export const SignInForm = ({ onSwitchToSignup,onSwitchToForgotPassword } : LoginFormProps) => {
+export default function SignInForm ({ onSwitchToSignup,onSwitchToForgotPassword, onSuccess } : LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const { register, reset, handleSubmit, formState: { isSubmitting, errors} } = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -32,24 +34,23 @@ export const SignInForm = ({ onSwitchToSignup,onSwitchToForgotPassword } : Login
   const onSubmit = async(data: z.infer<typeof signInSchema>) => {
     await asyncHandlerFront(
       async() => {
-      // const result = await signIn('credentials', {
-      //   redirect: false,
-      //   identifier: data.email,
-      //   password: data.password
-      // })
-      // if(result?.error) return toast.error(result.error);
-      // if(result?.url) router.push(`/dashboard/ngo?ngoId=${params.get("ngoId")}`);
+        await asyncHandlerFront(
+          async() => {
+            // console.log(data) 
+            await apiClient.signIn(data)
+          },
+          (error:any) => toast.error(error.message)
+        )
       },
-      (error:any) => {
-        // toast.error("Failed to login", error)
-      }
     )
     reset()
+    onSuccess();
   };
 
 
   return (
-    <AuthFormWrapper>
+    <div className="w-full lg:w-1/3 m-auto items-center justify-center p-8">
+    {/* <AuthFormWrapper> */}
       <div className="text-center mb-8">
         <h2 className="text-2xl font-display font-bold text-foreground mb-2">
           Welcome Back
@@ -58,17 +59,18 @@ export const SignInForm = ({ onSwitchToSignup,onSwitchToForgotPassword } : Login
           Sign in to continue your culinary journey
         </p>
       </div>
-
+      
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email py-2">Email</Label>
-              <div className="relative">
+              <div className="relative py-2">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
                   className="pl-10"
+                  {...register('email')}
                 />
               </div>
               { errors.email && ( <p className="text-sm text-red-500">{errors.email.message}</p> )}
@@ -107,7 +109,7 @@ export const SignInForm = ({ onSwitchToSignup,onSwitchToForgotPassword } : Login
 
             <Button type="submit" disabled={isSubmitting} variant="gold" size="lg" className="w-full group cursor-pointer">
               {!isSubmitting ? "Sign In" : "Signing In..."}
-              {!isSubmitting ? <LogIn className="w-5 h-5 " /> : <Loader className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+              {!isSubmitting ? <LogIn className="w-5 h-5 " /> : <Loader className="w-5 h-5 animate-spin" />}
             </Button>
           </form>
 
@@ -122,6 +124,7 @@ export const SignInForm = ({ onSwitchToSignup,onSwitchToForgotPassword } : Login
           </button>
         </p>
       </div>
-    </AuthFormWrapper>
+    {/* </AuthFormWrapper> */}
+    </div>
   );
 };

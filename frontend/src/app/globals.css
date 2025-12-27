@@ -130,13 +130,6 @@
 }
 
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
-
 @layer components {
   .text-gradient-gold {
     background-image: var(--gradient-gold);
@@ -240,6 +233,16 @@
     font-family: var(--font-display);  
   }
 }
+
+
+
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
 
 /* 
   body {

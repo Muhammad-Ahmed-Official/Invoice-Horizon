@@ -93,15 +93,15 @@ export class AuthService {
         if(!user) throw new NotFoundException('User not found');
         if(user.isVerified) throw new ConflictException('User already verified');
         
-        if(user.otpExpiry! < new Date) {
+        if(user.otpExpiry! < new Date()) {
             const otp = Math.floor(100000 + Math.random() * 900000);
             const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
             const emailService = new EmailService(this.configService); 
             await emailService.resendOtpEmail(email, otp); 
             await this.prisma.user.update({ where: { email }, data: { otp, otpExpiry } });
+            return { success: true, message: "OTP resend successfully" };
         }
-
-        return { success: true, message: "OTP resend successfully" };
+        return { success: false, message: "Cannot resend OTP before 10 minutes" }
     };
 
 

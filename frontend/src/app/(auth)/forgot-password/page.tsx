@@ -7,12 +7,13 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useForm } from "react-hook-form";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
+import { apiClient } from "@/lib/apiClient";
 
 interface ForgotPasswordFormProps {
   onSwitchToLogin: () => void;
 }
 
-export const ForgotPasswordForm = ({ onSwitchToLogin } : ForgotPasswordFormProps) => {
+export default function ForgotPasswordForm({ onSwitchToLogin } : ForgotPasswordFormProps) {
   const { register, reset, handleSubmit, formState: { isSubmitting, errors} } = useForm({
     defaultValues: {
       email: "",
@@ -22,7 +23,7 @@ export const ForgotPasswordForm = ({ onSwitchToLogin } : ForgotPasswordFormProps
   const onSubmit = async(data:any) => {
     await asyncHandlerFront(
         async() => {
-          
+          await apiClient.forgotPassword(data)
         },
         (error:any) => {
           // toast.error("Failed to login", error)
@@ -33,7 +34,8 @@ export const ForgotPasswordForm = ({ onSwitchToLogin } : ForgotPasswordFormProps
   
 
   return (
-    <AuthFormWrapper>
+    <div className="w-full lg:w-1/3 m-auto items-center justify-center p-8">
+    {/* <AuthFormWrapper> */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
           <Mail className="h-8 w-8 text-primary" />
@@ -70,6 +72,7 @@ export const ForgotPasswordForm = ({ onSwitchToLogin } : ForgotPasswordFormProps
           Back to Sign In
         </button>
       </div>
-    </AuthFormWrapper>
+    {/* </AuthFormWrapper> */}
+    </div>
   );
 };
