@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { Search, Mail, Phone, Building, User } from 'lucide-react';
+import { Search, Mail, Phone, Building, User, Users } from 'lucide-react';
 import { Input } from '../../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '@/app/components/ui/button';
@@ -201,15 +201,26 @@ export default function Clients() {
 
   return (
     <div className="px-4 py-6 md:px-8 animate-fade-in">
-    <div className="mb-8 flex justify-between">
-      <div>
-        <h1 className="text-3xl font-bold text-gradient-gold"> Clients </h1>
-        <p className="mt-2 text-muted-foreground"> Manage your client relationships </p>
-      </div>
-      <Button onClick={() => setClientModel(true)} className="bg-gradient-gold text-primary-foreground shadow-gold hover:shadow-glow transition">
-        <User className="mr-2 h-4 w-4" /> New Client
-      </Button>
+
+        <div className="mx-auto mb-6 max-w-6xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient-gold">
+        Clients
+      </h1>
+      <p className="mt-1 flex items-center gap-2 text-sm sm:text-base text-muted-foreground">
+        <Users className="h-4 w-4 text-gold" />
+        Manage your client relationships
+      </p>
     </div>
+
+    <Button
+      onClick={() => setClientModel(true)}
+      className="w-full sm:w-auto bg-gradient-gold text-primary-foreground shadow-gold hover:shadow-glow transition"
+    >
+      <User className="mr-2 h-4 w-4" /> New Client
+    </Button>
+  </div>
+
 
     <CreateClientModel clientModel={clientModel} setClientModel={setClientModel} />
 

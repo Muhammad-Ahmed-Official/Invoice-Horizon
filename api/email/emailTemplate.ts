@@ -1,89 +1,89 @@
 export const FORGOT_PASSWORD_Template = (resetLink: string) => `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reset Your Password</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f6f8;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 50px auto;
-      background: #ffffff;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .header {
-      font-size: 24px; /* Larger font size */
-      font-weight: 700; /* Bold text */
-      color: #ffffff;
-      background: linear-gradient(135deg, #ff8c42, #ff6a00); /* Gradient background */
-      padding: 20px; /* Padding around the header */
-      border-radius: 8px; /* Rounded corners */
-      margin-bottom: 20px; /* Space below the title */
-      letter-spacing: 1px; /* Slightly spaced letters for a cleaner look */
-      text-transform: uppercase; /* Uppercase letters for a more formal look */
-    }
-    .message {
-      font-size: 16px;
-      color: #555;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-    .button {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 14px 32px;
-      background: linear-gradient(135deg, #ff8c42, #ff6a00);
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      transition: background 0.3s, transform 0.3s;
-    }
-    .button:hover {
-      background: linear-gradient(135deg, #ff6a00, #ff8c42);
-      transform: translateY(-2px); /* Slight hover effect */
-    }
-    .footer {
-      font-size: 12px;
-      color: #777;
-      margin-top: 40px;
-    }
-    .footer a {
-      color: #ff6a00;
-      text-decoration: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">Reset Your Password</div>
-    <p class="message">
-      Hello,<br /><br />
-      We received a request to reset the password for your account. If you didn't request this, please ignore this email.
-    </p>
-    <p class="message">
-      Click the button below to reset your password. This link will expire in 30 minutes.
-    </p>
-    <a href="${resetLink}" class="button">Reset Password</a>
-    <p class="footer">
-      If you didn’t request this, you can safely ignore this email.<br />
-      &copy; ${new Date().getFullYear()} E-Commerce Platform. All rights reserved.
-    </p>
-  </div>
-</body>
-</html>
+ <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Reset Password</title>
+      <style>
+          body {
+              font-family: Arial, sans-serif;
+              background-color: #f9f9f9;
+              color: #333;
+          }
+          .email-container {
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+              background-color: #ffffff;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+          }
+          .email-header {
+              text-align: center;
+              margin-bottom: 20px;
+          }
+          .email-header h2 {
+              color: #4CAF50;
+              margin-bottom: 10px;
+          }
+          .email-body p {
+              color: #444;
+          }
+          .email-button {
+              text-align: center;
+              margin: 20px 0;
+          }
+          .email-button a {
+              display: inline-block;
+              padding: 12px 20px;
+              font-size: 16px;
+              color: #fff;
+              background-color: #4CAF50;
+              text-decoration: none;
+              border-radius: 5px;
+          }
+          .email-footer {
+              text-align: center;
+              font-size: 12px;
+              color: #aaa;
+          }
+          .email-footer a {
+              color: #4CAF50;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="email-container">
+          <div class="email-header">
+              <h2>Password Reset Request</h2>
+              <p>We're here to help you reset your password securely.</p>
+          </div>
+          <div class="email-body">
+              <p>Hello,</p>
+              <p>
+                  We received a request to reset your password. To proceed, please click the button below. This link will expire in <strong>30 minutes</strong>.
+              </p>
+          </div>
+          <div class="email-button">
+              <a href="${resetLink}" target="_blank">
+                  Reset Your Password
+              </a>
+          </div>
+          <div class="email-body">
+              <p>If you did not request this, you can safely ignore this email.</p>
+              <p>Thank you,<br><strong>Invoice Horizon</strong></p>
+          </div>
+          <hr>
+          <div class="email-footer">
+              <p>
+                  If you are having trouble clicking the button, copy and paste the link below into your browser:<br>
+                  <a href="${resetLink}" class="button">Reset Password</a>
+              </p>
+          </div>
+      </div>
+  </body>
+  </html>
 `;
 
 export const RESEND_OTP_Template = ( otp: number, expiryMinutes = 10 ) => `
@@ -176,74 +176,81 @@ export const RESEND_OTP_Template = ( otp: number, expiryMinutes = 10 ) => `
 `;
 
 export const VERIFY_EMAIL_Template = (otp: number) => `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Verify Your Email</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f6f9;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      background: #ffffff;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    /* Title/Header Styles */
-    .header {
-      font-size: 24px; /* Larger font size */
-      font-weight: 700; /* Bold text */
-      color: #ffffff;
-      background: linear-gradient(135deg, #ff8c42, #ff6a00); /* Gradient background */
-      padding: 20px 40px; /* Padding around the header */
-      border-radius: 8px; /* Rounded corners */
-      margin-bottom: 20px; /* Space below the title */
-      letter-spacing: 1px; /* Slightly spaced letters for a cleaner look */
-      text-transform: uppercase; /* Uppercase letters for a more formal look */
-    }
-    .message {
-      font-size: 18px;
-      color: #555;
-      line-height: 1.5;
-      margin-bottom: 20px;
-    }
-    .otp-box {
-      margin: 20px 0;
-      font-size: 36px;
-      font-weight: 700;
-      letter-spacing: 8px;
-      color: #ff6a00;
-      padding: 15px;
-      background-color: #fff3e0;
-      border: 2px solid #ff6a00;
-      border-radius: 8px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">Verify Your Email</div> <!-- Enhanced title with gradient and padding -->
-    <p class="message">
-      Thank you for registering with us.<br />
-      Please use the OTP below to verify your email address and complete your registration process.
-    </p>
-    <div class="otp-box">199005</div>
-    <p class="message">
-      If you didn’t request this, please ignore this email.<br />
-      &copy; ${new Date().getFullYear()} E-Commerce Platform. All rights reserved.
-    </p>
-  </div>
-</body>
-</html>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Verify Your Email</title>
+      <style>
+          body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              background-color: #f4f4f4;
+          }
+          .container {
+              max-width: 600px;
+              margin: 30px auto;
+              background: #ffffff;
+              border-radius: 8px;
+              box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+              overflow: hidden;
+              border: 1px solid #ddd;
+          }
+          .header {
+              background-color: #4CAF50;
+              color: white;
+              padding: 20px;
+              text-align: center;
+              font-size: 26px;
+              font-weight: bold;
+          }
+          .content {
+              padding: 25px;
+              color: #333;
+              line-height: 1.8;
+          }
+          .verification-code {
+              display: block;
+              margin: 20px 0;
+              font-size: 22px;
+              color: #4CAF50;
+              background: #e8f5e9;
+              border: 1px dashed #4CAF50;
+              padding: 10px;
+              text-align: center;
+              border-radius: 5px;
+              font-weight: bold;
+              letter-spacing: 2px;
+          }
+          .footer {
+              background-color: #f4f4f4;
+              padding: 15px;
+              text-align: center;
+              color: #777;
+              font-size: 12px;
+              border-top: 1px solid #ddd;
+          }
+          p {
+              margin: 0 0 15px;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="container">
+          <div class="header">Verify Your Email</div>
+          <div class="content">
+              <p>Hello,</p>
+              <p>Thank you for signing up! Please confirm your email address by entering the code below:</p>
+              <span class="verification-code">${otp}</span>
+              <p>If you did not create an account, no further action is required. If you have any questions, feel free to contact our support team.</p>
+          </div>
+          <div class="footer">
+              <p>&copy; ${new Date().getFullYear()} Invoice Horizon. All rights reserved.</p>
+          </div>
+      </div>
+  </body>
+  </html>
 
 `;

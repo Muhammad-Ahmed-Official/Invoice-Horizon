@@ -12,12 +12,11 @@ export function AuthProvider({children}: {children:ReactNode}){
 
     const getUser = async() => {
         await asyncHandlerFront(
-            async() => {
-                const response:any = await apiClient.isUser();
-                // console.log(response.me)
-                setUser(response?.me)
-            },
-            (error) => toast.error(error.message)
+          async() => {
+            const response:any = await apiClient.isUser();
+            setUser(response?.me)
+          },
+          (error) => toast.error(error.message)
         )
     }
 

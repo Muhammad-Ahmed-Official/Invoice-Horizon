@@ -199,16 +199,25 @@ export default function Invoices() {
   if(loading) return <InvoicesSkeleton />
 
   return (
-    <div className="px-4 py-6 md:px-8 animate-fade-in">
-      <div className="mx-auto mb-8 max-w-6xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gradient-gold"> Invoices </h1>
-          <p className="mt-1 flex items-center gap-2 text-muted-foreground"> <FileText className="h-4 w-4 text-gold"/>Manage and track all your invoices </p>
-        </div>
-        <Button onClick={() => setShowModal(true)} className="bg-gradient-gold text-primary-foreground shadow-gold hover:shadow-glow transition">
-          <PlusCircle className="mr-2 h-4 w-4" /> New Invoice
-        </Button>
-      </div>
+    <div className="px-4 py-4 sm:py-6 md:px-6 lg:px-8 animate-fade-in pb-20">
+  <div className="mx-auto mb-6 max-w-6xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient-gold">
+        Invoices
+      </h1>
+      <p className="mt-1 flex items-center gap-2 text-sm sm:text-base text-muted-foreground">
+        <FileText className="h-4 w-4 text-gold" />
+        Manage and track all your invoices
+      </p>
+    </div>
+
+    <Button
+      onClick={() => setShowModal(true)}
+      className="w-full sm:w-auto bg-gradient-gold text-primary-foreground shadow-gold hover:shadow-glow transition"
+    >
+      <PlusCircle className="mr-2 h-4 w-4" /> New Invoice
+    </Button>
+  </div>
 
       <InvoiceModel showModal={showModal} setShowModal={setShowModal} />
 
@@ -249,57 +258,115 @@ export default function Invoices() {
       </Card>
 
       {/* Table */}
-      <Card className="mx-auto max-w-6xl bg-gradient-card shadow-lg border border-border overflow-hidden">
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-charcoal-light">
-                  {[
-                    'Invoice #',  'Client',
-                    'Issue Date', 'Due Date',
-                    'Amount',  'Status', 'Actions',
-                  ].map((head) => (
-                    <TableHead key={head} className="text-cream font-semibold"> {head} </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredInvoices.length ? (
-                  filteredInvoices.map((invoice: any) => (
-                    <TableRow key={invoice.id} className="hover:bg-accent/5 transition">
-                      <TableCell className="font-semibold text-gold hover:text-gold-light"> {invoice.invoiceNumber} </TableCell>
-                      <TableCell>
-                        <div className="font-semibold text-foreground"> {invoice.client.name} </div>
-                        <div className="text-sm text-muted-foreground"> {invoice.client.company} </div>
-                      </TableCell>
-                      <TableCell> {new Date(invoice.issueDate).toLocaleDateString()} </TableCell>
-                      <TableCell> {new Date(invoice.dueDate).toLocaleDateString()} </TableCell>
-                      <TableCell className="font-bold text-gold"> Rs {invoice.total.toLocaleString()} </TableCell>
-                      <TableCell> <StatusBadge status={invoice.status} /> </TableCell>
-                      <TableCell className="text-right">
-                        <Button onClick={() => {
-                            setSelectedInvoice(invoice);
-                            setShowEditModal(true);
-                        }} variant="ghost" size="sm" className="text-gold hover:bg-accent/10"> View </Button>
-                      </TableCell>
-                          <InvoiceEditModal
-                            showEditModal={showEditModal}
-                            setShowEditModal={setShowEditModal}
-                            invoice={selectedInvoice}
-                          />
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-64 text-center"> <p className="text-muted-foreground">No invoices found </p></TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+<Card className="mx-auto max-w-6xl bg-gradient-card shadow-lg border border-border overflow-hidden">
+  <CardContent className="p-0">
+
+    {/* Enable scroll only on small screens */}
+    <div className="overflow-x-auto md:overflow-visible">
+
+      <Table className="w-full text-xs sm:text-sm">
+        {/* TABLE HEADER */}
+        <TableHeader>
+          <TableRow className="bg-muted/40">
+            <TableHead className="whitespace-nowrap">Invoice #</TableHead>
+            <TableHead>Client</TableHead>
+
+            {/* Hide on mobile */}
+            <TableHead className="hidden sm:table-cell">
+              Issue Date
+            </TableHead>
+            <TableHead className="hidden md:table-cell">
+              Due Date
+            </TableHead>
+
+            <TableHead>Amount</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Action</TableHead>
+          </TableRow>
+        </TableHeader>
+
+        {/* TABLE BODY */}
+        <TableBody>
+          {filteredInvoices.length ? (
+            filteredInvoices.map((invoice: any) => (
+              <TableRow
+                key={invoice.id}
+                className="hover:bg-accent/5 transition"
+              >
+                {/* Invoice Number */}
+                <TableCell className="font-semibold text-gold whitespace-nowrap">
+                  {invoice.invoiceNumber}
+                </TableCell>
+
+                {/* Client */}
+                <TableCell>
+                  <div className="font-semibold text-foreground leading-tight">
+                    {invoice.client.name}
+                  </div>
+                  <div className="text-xs text-muted-foreground hidden sm:block">
+                    {invoice.client.company}
+                  </div>
+                </TableCell>
+
+                {/* Issue Date */}
+                <TableCell className="hidden sm:table-cell whitespace-nowrap">
+                  {new Date(invoice.issueDate).toLocaleDateString()}
+                </TableCell>
+
+                {/* Due Date */}
+                <TableCell className="hidden md:table-cell whitespace-nowrap">
+                  {new Date(invoice.dueDate).toLocaleDateString()}
+                </TableCell>
+
+                {/* Amount */}
+                <TableCell className="font-bold text-gold whitespace-nowrap">
+                  Rs {invoice.total.toLocaleString()}
+                </TableCell>
+
+                {/* Status */}
+                <TableCell>
+                  <StatusBadge status={invoice.status} />
+                </TableCell>
+
+                {/* Actions */}
+                <TableCell className="text-right">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-gold hover:bg-accent/10 px-2"
+                    onClick={() => {
+                      setSelectedInvoice(invoice);
+                      setShowEditModal(true);
+                    }}
+                  >
+                    View
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={7} className="h-48 text-center">
+                <p className="text-muted-foreground">
+                  No invoices found
+                </p>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+    </div>
+  </CardContent>
+
+  {/* Edit Modal */}
+  <InvoiceEditModal
+    showEditModal={showEditModal}
+    setShowEditModal={setShowEditModal}
+    invoice={selectedInvoice}
+  />
+</Card>
+
     </div>
   )
 }

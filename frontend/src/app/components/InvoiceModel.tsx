@@ -222,119 +222,260 @@ export default function InvoiceModel({showModal, setShowModal} : any) {
     }
 
   return (
-    showModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-    <div className="w-full max-w-5xl  rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh] p-6 animate-fade-in">
-      {/* Modal Header */}
-      <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-3">
-        <h2 className="text-2xl font-bold text-gradient-gold">Create New Invoice</h2>
-        <Button variant="ghost" size="icon" onClick={() => setShowModal(false)}>
-          ✕
+    (showModal && 
+
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="w-full sm:max-w-3xl lg:max-w-5xl bg-background rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[95vh] overflow-y-auto p-4 sm:p-6 animate-fade-in">
+
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4 border-b pb-3">
+          <h2 className="text-lg sm:text-2xl font-bold text-gradient-gold">
+            Create New Invoice
+          </h2>
+          <Button variant="ghost" size="icon" onClick={() => setShowModal(false)}>
+            ✕
+          </Button>
+        </div>
+
+        <form onSubmit={handleSubmit(onsubmit)} className="space-y-6">
+
+          {/* Invoice Details */}
+          <Card className="border-0 shadow-md">
+            <CardHeader>
+              <CardTitle className="text-muted-foreground">
+                Invoice Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4 sm:grid-cols-2">
+
+              {/* Client */}
+              <div className="space-y-2">
+                <Label>Client</Label>
+                <Controller
+                  control={control}
+                  name="client"
+                  rules={{ required: 'Client is required' }}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select client" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {mockClients.map((c) => (
+                          <SelectItem key={c.id} value={c.name}>
+                            {c.name} – {c.company}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.client && (
+                  <p className="text-xs text-red-500">
+                    {errors.client.message as string}
+                  </p>
+                )}
+              </div>
+
+              {/* Issue Date */}
+              <div className="space-y-2">
+                <Label>Issue Date</Label>
+                <Input type="date" {...register('issueDate')} />
+              </div>
+
+              {/* Due Date */}
+              <div className="space-y-2">
+                <Label>Due Date</Label>
+                <Input type="date" {...register('dueDate')} />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Line Items */}
+         <Card className="border-0 shadow-md">
+  <CardHeader>
+    <CardTitle className="text-muted-foreground">
+      Line Items
+    </CardTitle>
+  </CardHeader>
+
+  <CardContent className="space-y-4">
+    {/* Desktop/Large Screen Layout */}
+    <div className="hidden md:grid md:grid-cols-12 md:gap-4 md:items-center md:pb-2 md:px-2 text-sm text-muted-foreground">
+      <div className="md:col-span-5">Description</div>
+      <div className="md:col-span-2">Quantity</div>
+      <div className="md:col-span-2">Rate</div>
+      <div className="md:col-span-2">Total</div>
+      <div className="md:col-span-1">Actions</div>
+    </div>
+
+    {fields.map((field, index) => (
+      <div
+        key={field.id}
+        className="grid grid-cols-1 md:grid-cols-12 gap-4 p-2 md:p-0 border md:border-0 rounded-lg md:rounded-none"
+      >
+        {/* Description - Full width on mobile, 5 columns on desktop */}
+        <div className="md:col-span-5">
+          <label className="md:hidden text-xs text-muted-foreground mb-1">
+            Description
+          </label>
+          <Input
+            placeholder="Enter description"
+            className="w-full"
+            {...register(`items.${index}.description`)}
+          />
+        </div>
+
+        {/* Quantity and Rate - Grid on mobile, separate columns on desktop */}
+        <div className="grid grid-cols-2 gap-4 md:contents">
+          <div className="md:col-span-2">
+            <label className="md:hidden text-xs text-muted-foreground mb-1">
+              Quantity
+            </label>
+            <Input
+              type="number"
+              min="1"
+              placeholder="Qty"
+              className="w-full"
+              {...register(`items.${index}.quantity`, {
+                valueAsNumber: true,
+              })}
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="md:hidden text-xs text-muted-foreground mb-1">
+              Rate
+            </label>
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Rate"
+              className="w-full"
+              {...register(`items.${index}.rate`, {
+                valueAsNumber: true,
+              })}
+            />
+          </div>
+        </div>
+
+        {/* Total - Full width on mobile, 2 columns on desktop */}
+        <div className="md:col-span-2">
+          <label className="md:hidden text-xs text-muted-foreground mb-1">
+            Total
+          </label>
+          <Input
+            disabled
+            className="w-full font-semibold bg-muted/50"
+            value={`Rs ${(items[index].quantity * items[index].rate).toFixed(2)}`}
+          />
+        </div>
+
+        {/* Actions - Full width on mobile, 1 column on desktop */}
+        <div className="flex justify-end md:col-span-1">
+          <div className="flex gap-2 w-full md:w-auto">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() =>
+                append({ description: '', quantity: 1, rate: 0 })
+              }
+              className="flex-1 md:flex-none"
+              aria-label="Add item"
+            >
+              +
+            </Button>
+            
+            {fields.length > 1 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => remove(index)}
+                className="flex-1 md:flex-none"
+                aria-label="Remove item"
+              >
+                −
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    ))}
+
+    {/* Add First Item Button (when no items exist) */}
+    {fields.length === 0 && (
+      <div className="text-center py-8">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => append({ description: '', quantity: 1, rate: 0 })}
+          className="mx-auto"
+        >
+          + Add First Item
         </Button>
       </div>
+    )}
+  </CardContent>  
+          </Card>
 
-      <form onSubmit={handleSubmit(onsubmit)} className="space-y-6">
-        {/* Invoice Details */}
-        <Card className="shadow-lg border-0">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-muted-foreground">Invoice Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="client" className='text-sm font-medium text-foreground/80' >Client</Label>
-                  <Controller
-                    control={control}
-                    name="client"
-                    rules={{ required: "Client is required" }}
-                    render={({ field }) => (
-                      <Select {...field} onValueChange={field.onChange}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a client" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {mockClients.map((c) => (
-                            <SelectItem key={c.id} value={c.name}>
-                              {c.name} - {c.company}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                { errors.client && ( <p className="text-sm text-red-500">{errors.client.message}</p> )}
+        <Card className="border-0 shadow-md">
+          <CardContent className="p-4">
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="text-muted-foreground">Subtotal</div>
+                <div className="text-right font-medium">Rs {subtotal}</div>
+                
+                <div className="text-muted-foreground">Tax (18%)</div>
+                <div className="text-right font-medium">Rs {tax}</div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="issueDate" className='text-sm font-medium text-foreground/80'>Issue Date</Label>
-                <Input id="issueDate" type="date" {...register("issueDate")}  required />
-                { errors.issueDate && ( <p className="text-sm text-red-500">{errors.issueDate.message}</p> )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dueDate" className='text-sm font-medium text-foreground/80'>Due Date</Label>
-                <Input id="dueDate" type="date" {...register("dueDate")} required />
-                { errors.dueDate && ( <p className="text-sm text-red-500">{errors.dueDate.message}</p> )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Line Items */}
-        <Card className="shadow-lg border-0">
-          <CardHeader className="flex justify-between items-center">
-            <CardTitle className="text-lg font-semibold text-muted-foreground">Line Items</CardTitle>
-           <Button type="button" onClick={() => append({ description: "", quantity: 1, rate: 0 })}>
-                <Plus className="mr-2 h-4 w-4" /> Add Item
-          </Button>
-          </CardHeader>
-         <CardContent>
-              {fields.map((field, index) => (
-                <div key={field.id} className="flex gap-3 items-start mb-2">
-                  <Input placeholder="Description" {...register(`items.${index}.description` as const)} />
-                  <Input type="number" min="1" {...register(`items.${index}.quantity` as const, { valueAsNumber: true })} />
-                  <Input type="number" min="0" step="0.01" {...register(`items.${index}.rate` as const, { valueAsNumber: true })} />
-                  <Input value={`$${(items[index].quantity * items[index].rate).toFixed(2)}`} disabled />
-                  <Button type="button" onClick={() => remove(index)}> <Trash2 className='h-4 w-4' /> </Button>
+              
+              <div className="border-t border-dashed my-2"></div>
+              
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="font-semibold">Total</div>
+                  <div className="text-xs text-muted-foreground">All taxes included</div>
                 </div>
-              ))}
-            </CardContent>
-        </Card>
-
-        {/* Summary */}
-        <Card className="shadow-lg border-0">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-muted-foreground">Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span>Subtotal:</span>
-              <span>${subtotal}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span>Tax (18%):</span>
-              <span>Rs {tax}</span>
-            </div>
-            <div className="border-t pt-3 flex justify-between">
-              <span className="font-semibold ">Total:</span>
-              <span className="text-xl font-bold text-gradient-gold">Rs {total}</span>
+                <div className="text-2xl font-bold bg-gold bg-clip-text text-transparent">
+                  Rs {total}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Actions */}
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => setShowModal(false)}>
-            Cancel
-          </Button>
-          <Button type='submit' disabled={isSubmitting} className="bg-gold hover:bg-gold-light text-charcoal font-semibold">
-            {isSubmitting ? <span className='flex items-center gap-1'> Creating.... <Loader className='animate-spin' /> </span> : 
-            (<span className='flex items-center gap-1'> Create Invoice</span>)}
-          </Button>
-         
-        </div>
-      </form>
+          {/* Actions */}
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() => setShowModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full sm:w-auto bg-gold text-charcoal"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  Creating <Loader className="animate-spin h-4 w-4" />
+                </span>
+              ) : (
+                'Create Invoice'
+              )}
+            </Button>
+          </div>
+
+        </form>
+      </div>
     </div>
-  </div>
-)
+  )
 )
 }
 

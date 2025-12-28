@@ -1,19 +1,18 @@
 'use client'
 
-import { Mail, ArrowLeft, Loader } from "lucide-react";
+import { Mail, ArrowLeft, Loader, ShieldQuestion } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { AuthFormWrapper } from "@/app/components/ui/auth-modal";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useForm } from "react-hook-form";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
 import { apiClient } from "@/lib/apiClient";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
-interface ForgotPasswordFormProps {
-  onSwitchToLogin: () => void;
-}
 
-export default function ForgotPasswordForm({ onSwitchToLogin } : ForgotPasswordFormProps) {
+export default function ForgotPasswordForm() {
   const { register, reset, handleSubmit, formState: { isSubmitting, errors} } = useForm({
     defaultValues: {
       email: "",
@@ -25,54 +24,79 @@ export default function ForgotPasswordForm({ onSwitchToLogin } : ForgotPasswordF
         async() => {
           await apiClient.forgotPassword(data)
         },
-        (error:any) => {
-          // toast.error("Failed to login", error)
-        }
+        (error:any) => toast.error(error.mess)
     )
     reset()
   };
   
 
   return (
-    <div className="w-full lg:w-1/3 m-auto items-center justify-center p-8">
-    {/* <AuthFormWrapper> */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-          <Mail className="h-8 w-8 text-primary" />
-        </div>
-        <h2 className="text-2xl font-display font-bold text-foreground mb-2"> Forgot Password? </h2>
-        <p className="text-muted-foreground"> No worries! Enter your email and we'll send you a reset code. </p>
+   <div className="min-h-screen w-full flex items-center justify-center bg-background relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-gold/20 blur-[120px] rounded-full" />
+        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-gold/10 blur-[120px] rounded-full" />
       </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="email py-2">Email</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                className="pl-10"
-                {...register('email')}
-              />
-            </div>
-            { errors.email && ( <p className="text-sm text-red-500">{errors.email.message}</p> )}
-          </div>
-            <Button type="submit" disabled={isSubmitting} variant="gold" size='lg' className="w-full group cursor-pointer">
-                {!isSubmitting ? "Send Reset Code" : "Sending Code..."} 
-                {!isSubmitting ? <Mail className="w-5 h-5 group-hover:translate-x-1 transition-transform" /> : <Loader className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
-            </Button>
-        </form>
 
-      <div className="mt-6 text-center">
-        <button
-          onClick={onSwitchToLogin}
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Sign In
-        </button>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md mx-4 z-10"
+      >
+        <div className="bg-card border border-border/50 rounded-2xl shadow-2xl p-8 backdrop-blur-sm">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 mb-4">
+              <ShieldQuestion className="w-6 h-6 text-gold" />
+            </div>
+            <h2 className="text-3xl font-display font-bold text-foreground mb-2">Forgot Password</h2>
+            <p className="text-muted-foreground">No worries! Enter your email and we'll send you a link to reset passowrd.</p>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium text-foreground/80">
+                Email Address
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="manager@kitchen.com"
+                  className="pl-10 h-11 bg-charcoal/50 border-border focus:ring-gold/30 focus:border-gold/50"
+                  {...register("email")}
+                />
+              </div>
+              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-11 bg-gold hover:bg-gold-light text-charcoal font-semibold rounded-xl transition-all shadow-gold"
+            >
+              {!isSubmitting ? (
+                <>
+                  <span>Send Reset Code</span>
+                  <Mail className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+                </>
+              ) : (
+                <Loader className="w-4 h-4 animate-spin" />
+              )}
+            </Button>
+          </form>
+
+          <div className="pt-8 border-t border-border/60 flex items-center justify-center">
+        <Link
+          href="/sign-in"
+          className="group flex items-center gap-2 text-sm font-bold text-gold hover:text-gold/80 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+          Back to System Sign In
+        </Link>
       </div>
-    {/* </AuthFormWrapper> */}
+        </div>
+      </motion.div>
     </div>
   );
 };

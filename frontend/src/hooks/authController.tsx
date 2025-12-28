@@ -1,95 +1,95 @@
-'use client'
+// 'use client'
 
-import  SignupForm  from "@/app/(auth)/sign-up/page";
-import SignInForm from "@/app/(auth)/sign-in/page";
-import { AuthModal } from "@/app/components/ui/auth-modal";
-import { AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
-import ForgotPasswordForm from "@/app/(auth)/forgot-password/page";
-import VerifyEmail from "@/app/(auth)/verify-email/page";
+// import  SignupForm  from "@/app/(auth)/sign-up/page";
+// import SignInForm from "@/app/(auth)/sign-in/page";
+// import { AuthModal } from "@/app/components/ui/auth-modal";
+// import { AnimatePresence } from "framer-motion";
+// import { useEffect, useState } from "react";
+// import ForgotPasswordForm from "@/app/(auth)/forgot-password/page";
+// import VerifyEmail from "@/app/(auth)/verify-email/page";
 
-type AuthState = "login" | "signup" | "forgot-password" | "otp-verification" | "reset-password";
+// type AuthState = "login" | "signup" | "forgot-password" | "otp-verification" | "reset-password";
 
-interface AuthControllerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  initialState?: AuthState;
-}
-// hey there i really like your post today this what i think about it 
+// interface AuthControllerProps {
+//   isOpen: boolean;
+//   onClose: () => void;
+//   initialState?: AuthState;
+// }
+// // hey there i really like your post today this what i think about it 
 
-export const AuthController = ({ isOpen, onClose,initialState = "login" } : AuthControllerProps) => {
-  const [authState, setAuthState] = useState<AuthState>(initialState);
-  const [resetEmail, setResetEmail] = useState("");
+// export const AuthController = ({ isOpen, onClose,initialState = "login" } : AuthControllerProps) => {
+//   const [authState, setAuthState] = useState<AuthState>(initialState);
+//   const [resetEmail, setResetEmail] = useState("");
 
-  useEffect(() => {
-    if (isOpen) {
-      setAuthState(initialState);
-    }
-  }, [isOpen, initialState]);
+//   useEffect(() => {
+//     if (isOpen) {
+//       setAuthState(initialState);
+//     }
+//   }, [isOpen, initialState]);
 
-  const handleClose = () => {
-    onClose();
-  };
-  const handleSignupSuccess = (email: string) => {
-    setResetEmail(email);
-    setAuthState("otp-verification");
-  };
-  
-//   const handleForgotPasswordSuccess = (email: string) => {
+//   const handleClose = () => {
+//     onClose();
+//   };
+//   const handleSignupSuccess = (email: string) => {
 //     setResetEmail(email);
 //     setAuthState("otp-verification");
 //   };
-//   const handleOTPSuccess = () => {
-//     setAuthState("reset-password");
-//   };
-//   const handleResetPasswordSuccess = () => {
-//     setAuthState("login");
-//     toast({
-//       title: "Password reset successful!",
-//       description: "You can now sign in with your new password.",
-//     });
-//   };
+  
+// //   const handleForgotPasswordSuccess = (email: string) => {
+// //     setResetEmail(email);
+// //     setAuthState("otp-verification");
+// //   };
+// //   const handleOTPSuccess = () => {
+// //     setAuthState("reset-password");
+// //   };
+// //   const handleResetPasswordSuccess = () => {
+// //     setAuthState("login");
+// //     toast({
+// //       title: "Password reset successful!",
+// //       description: "You can now sign in with your new password.",
+// //     });
+// //   };
 
-  const renderForm = () => {
-    switch (authState) {
-      case "login":
-        return (
-          <SignInForm
-            onSwitchToSignup={() => setAuthState("signup")}
-            onSwitchToForgotPassword={() => setAuthState("forgot-password")}
-            onSuccess={handleClose}
-          />
-        );
-      case "signup":
-        return (
-          <SignupForm
-            onSwitchToLogin={() => setAuthState("login")}
-            onSuccess={handleSignupSuccess}
-          />
-        );
-      case "forgot-password":
-        return (
-          <ForgotPasswordForm
-            onSwitchToLogin={() => setAuthState("login")}
-          />
-        );
-      case "otp-verification":
-        return (
-          <VerifyEmail
-            email={resetEmail}
-            // onSwitchToForgotPassword={() => setAuthState("forgot-password")}
-            onSuccess={handleClose}
-          />
-        );
+//   const renderForm = () => {
+//     switch (authState) {
+//       case "login":
+//         return (
+//           <SignInForm
+//             onSwitchToSignup={() => setAuthState("signup")}
+//             onSwitchToForgotPassword={() => setAuthState("forgot-password")}
+//             onSuccess={handleClose}
+//           />
+//         );
+//       case "signup":
+//         return (
+//           <SignupForm
+//             onSwitchToLogin={() => setAuthState("login")}
+//             onSuccess={handleSignupSuccess}
+//           />
+//         );
+//       case "forgot-password":
+//         return (
+//           <ForgotPasswordForm
+//             onSwitchToLogin={() => setAuthState("login")}
+//           />
+//         );
+//       case "otp-verification":
+//         return (
+//           <VerifyEmail
+//             email={resetEmail}
+//             // onSwitchToForgotPassword={() => setAuthState("forgot-password")}
+//             onSuccess={handleClose}
+//           />
+//         );
       
-      default:
-        return null;
-    }
-  };
+//       default:
+//         return null;
+//     }
+//   };
 
-  return (
-    <AuthModal isOpen={isOpen} onClose={onClose}>
-      <AnimatePresence mode="wait">{renderForm()}</AnimatePresence>
-    </AuthModal>
-  );
-};
+//   return (
+//     <AuthModal isOpen={isOpen} onClose={onClose}>
+//       <AnimatePresence mode="wait">{renderForm()}</AnimatePresence>
+//     </AuthModal>
+//   );
+// };

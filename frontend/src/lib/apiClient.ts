@@ -3,10 +3,23 @@ type FetchOptions = {
   variables?: Record<string, any>;
 };
 
+// import { gql } from "@apollo/client";
+// export const LOGIN_MUTATION = gql`
+//   mutation Login($input: LoginUserInput!) {
+//     login(loginUserInput: $input) {
+//       user {
+//         id
+//         name
+//         email
+//         role
+//       }
+//     }
+//   }`;
+
 
 class ApiClient {
   private async fetch<T>({ query, variables }: FetchOptions): Promise<T> {
-    const response = await fetch(`http://localhost:4000/graphql`,
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`,
       {
         method: "POST",
         credentials: "include",
@@ -25,7 +38,6 @@ class ApiClient {
 
     return result.data;
   }
-
 
     async isUser(){
         return this.fetch({
@@ -109,6 +121,8 @@ class ApiClient {
             variables: { input: data },
         })
     };
+
+    
 
 
 

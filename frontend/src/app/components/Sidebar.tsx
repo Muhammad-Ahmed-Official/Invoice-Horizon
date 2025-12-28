@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { usePathname } from 'next/navigation';
+import logo from "../../../public/logo2.png"
+import Image from 'next/image';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
@@ -34,14 +36,16 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden md:flex fixed top-0 left-0 h-screen w-64 flex-col bg-gradient-dark text-foreground shadow-lg">
+      <div className="hidden md:flex fixed top-0 left-0 h-screen w-68 flex-col bg-gradient-dark text-foreground shadow-lg">
         {/* LOGO */}
         <div className="flex h-20 items-center border-b border-border px-6">
           <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-gradient-gold p-2 shadow-gold">Logo</div>
+            <div className="rounded-xl ">
+              <Image src={logo} alt='logo' height={40} />
+            </div>
             <div>
-              <span className="text-xl font-bold text-gradient-gold">InvoicePro</span>
-              <p className="text-xs text-muted-foreground">Professional Billing</p>
+              <span className="text-[18px] font-bold text-gradient-gold">Invoice Horizon</span>
+              <p className="text-xs text-muted-foreground">Ignite your business flow</p>
             </div>
           </div>
         </div>
@@ -76,8 +80,7 @@ export default function Sidebar() {
         <div className="border-t border-border p-4">
           <Button
             onClick={handleLogout}
-            className="w-full bg-secondary text-secondary-foreground hover:bg-destructive hover:text-destructive-foreground transition shadow-md"
-          >
+            className="w-full bg-secondary text-secondary-foreground hover:bg-destructive hover:text-destructive-foreground">
             <LucideLogOut className="mr-2 h-5 w-5" /> Logout
           </Button>
         </div>

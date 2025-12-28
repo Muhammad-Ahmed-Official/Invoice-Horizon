@@ -10,7 +10,7 @@ export const asyncHandlerFront = async <T>(
         if (error instanceof ApiError) {
             onError?.(error);
         } else {
-            console.error('Unexpected error:', error);
+            console.log('Unexpected error:', error);
         }
     }
 };

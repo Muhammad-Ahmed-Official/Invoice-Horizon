@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/redux/authProvider";
 import Sidebar from "./components/Sidebar";
+import Footer from "./components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,12 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex min-h-screen">
+      <body className="min-h-screen">
         <AuthProvider>
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto md:ml-64">
             {children}
-          </main>
           <Toaster position="bottom-right" />
         </AuthProvider>
       </body>

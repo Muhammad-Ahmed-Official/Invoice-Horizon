@@ -2,44 +2,43 @@
 
 import { Shield, Loader } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { AuthFormWrapper } from "@/app/components/ui/auth-modal";
 import { OTPInput } from "@/app/components/ui/otpInput";
 import toast from "react-hot-toast";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
 import { useForm } from "react-hook-form";
 import { apiClient } from "@/lib/apiClient";
+import { motion } from "framer-motion";
+import { useRouter, useSearchParams } from "next/navigation";
 
-interface OTPVerificationFormProps {
-  email: string;
-  // onSwitchToForgotPassword: () => void;
-  onSuccess: () => void;
-}
 
-export default function VerifyEmail ({ email, onSuccess } : OTPVerificationFormProps ) {
-    const {reset, handleSubmit, watch, setValue, formState: { isSubmitting, errors } } = useForm({
-      defaultValues: {
-        otp: "",
-      }
-    })
-    const otp = watch("otp");
+export default function VerifyEmail () {
+  const {reset, handleSubmit, watch, setValue, formState: { isSubmitting, errors } } = useForm({
+    defaultValues: {
+      otp: "",
+    }
+  })
+  const otp = watch("otp");
+  const params = useSearchParams();
+  const email = params.get("email")
+  const router = useRouter();
 
     const onSubmit = async(data: any) => {
       await asyncHandlerFront(
         async() => {
           console.log(data);
-          await apiClient.verifyEmail(email, Number(data.otp));
+          await apiClient.verifyEmail(email as string, Number(data.otp));
           toast.success("Email verified successfully");
+          router.push("/sign-in");
         },
         (error) => toast.error(error.message)
       )
       reset()
-      onSuccess();
     };
 
     const handleResend = async() => {
       await asyncHandlerFront(
         async() => {
-          const response:any = await apiClient.resendOtp(email);
+          const response:any = await apiClient.resendOtp(email as string);
           toast.success(response.resendOtp.message)
         },
         (error) => toast.error(error.message)
@@ -47,20 +46,28 @@ export default function VerifyEmail ({ email, onSuccess } : OTPVerificationFormP
     }
 
   return (
-    <div className="w-full lg:w-1/3 m-auto items-center justify-center p-8">
-    {/* <AuthFormWrapper> */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-          <Shield className="h-8 w-8 text-primary" />
-        </div>
-        <h2 className="text-2xl font-display font-bold text-foreground mb-2"> Verify Your Email </h2>
-        <p className="text-muted-foreground">
-          We've sent a 6-digit code to
-          <br />
-          <span className="text-foreground font-medium">{email}</span>
-        </p>
+    <div className="min-h-screen w-full flex items-center justify-center bg-background relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-gold/20 blur-[120px] rounded-full" />
+        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-gold/10 blur-[120px] rounded-full" />
       </div>
 
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md mx-4 z-10"
+      >
+        <div className="bg-card border border-border/50 rounded-2xl shadow-2xl p-8 backdrop-blur-sm">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 mb-4">
+              <Shield className="w-6 h-6 text-gold" />
+            </div>
+            <h2 className="text-3xl font-display font-bold text-foreground mb-2">Verify Your Email</h2>
+            <p className="text-muted-foreground"> We've sent a 6-digit code to <br /> <span className="text-foreground font-medium">{email}</span> </p>
+          </div>
+
+          
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
           <OTPInput value={otp} onChange={(value:string) => setValue('otp', value, { shouldValidate: true })} />
@@ -71,7 +78,7 @@ export default function VerifyEmail ({ email, onSuccess } : OTPVerificationFormP
           type="submit"
           variant="gold"
           size="lg"
-          className="w-full"
+          className="w-full h-11 bg-gold hover:bg-gold-light text-charcoal font-semibold rounded-xl transition-all shadow-gold"
           disabled={isSubmitting || otp.length !== 6}
         >
           {isSubmitting ? (
@@ -88,13 +95,14 @@ export default function VerifyEmail ({ email, onSuccess } : OTPVerificationFormP
         </Button>
       </form>
 
-      <div className="mt-6 text-center space-y-3">
-        <p className="text-muted-foreground text-sm">
-          Didn't receive the code?{" "}
-            <button onClick={handleResend} className="text-primary font-medium hover:underline"> Resend Code </button>
-        </p>
+      <div className="pt-8 border-t border-border/60 flex items-center justify-center"> Didn't receive the code?
+        <button onClick={handleResend} className="group pl-2 flex items-center gap-2 text-sm font-bold text-gold hover:text-gold/80 transition-colors">
+          Resend Code
+        </button>
       </div>
-    {/* </AuthFormWrapper> */}
+      </div>
+      </motion.div>
     </div>
+
   );
 };
