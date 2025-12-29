@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react';
-import { Search, Mail, Phone, Building, User, Users } from 'lucide-react';
+import { Search, Mail, Phone, Building, User, Users, Pencil, Trash2, MoreVertical } from 'lucide-react';
 import { Input } from '../../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import CreateClientModel from '@/app/components/CreateClientModel';
 import ClientsSkeleton from '../../components/skelton/clientSkelton';
+import ClientEditModal from '@/app/components/ClientEditModel';
 
 
 export const mockClients = [
@@ -197,30 +198,36 @@ export default function Clients() {
     return { total: clientInvoices.length, totalAmount, paidAmount };
   };
 
+  const handleDeleteClient = async(id:string) => {
+    // setFilter(() => prev.filter((c) => c.id !== id))
+  }
+
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [showEditClientModal, setShowEditClientModal] = useState(false);
+
+  const handleEditClient = async(data:any) => {
+    setSelectedClient(data);
+    setShowEditClientModal(true);
+  }
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
   if(loading) return <ClientsSkeleton />    
 
   return (
     <div className="px-4 py-6 md:px-8 animate-fade-in">
-
-        <div className="mx-auto mb-6 max-w-6xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient-gold">
-        Clients
-      </h1>
-      <p className="mt-1 flex items-center gap-2 text-sm sm:text-base text-muted-foreground">
-        <Users className="h-4 w-4 text-gold" />
-        Manage your client relationships
-      </p>
-    </div>
-
-    <Button
-      onClick={() => setClientModel(true)}
-      className="w-full sm:w-auto bg-gradient-gold text-primary-foreground shadow-gold hover:shadow-glow transition"
-    >
-      <User className="mr-2 h-4 w-4" /> New Client
-    </Button>
-  </div>
-
+      <div className="mx-auto mb-6 max-w-6xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient-gold"> Clients </h1>
+          <p className="mt-1 flex items-center gap-2 text-sm sm:text-base text-muted-foreground">
+            <Users className="h-4 w-4 text-gold" /> Manage your client relationships
+          </p>
+        </div>
+        <Button
+          onClick={() => setClientModel(true)}
+          className="w-full sm:w-auto bg-gradient-gold text-primary-foreground shadow-gold hover:shadow-glow transition">
+          <User className="mr-2 h-4 w-4" /> New Client
+        </Button>
+      </div>
 
     <CreateClientModel clientModel={clientModel} setClientModel={setClientModel} />
 
@@ -244,38 +251,82 @@ export default function Clients() {
   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
     {filteredClients.map((client) => {
       const stats = getClientInvoiceStats(client.id);
-
       return (
         <Card
           key={client.id}
-          className="bg-gradient-card border border-border shadow-md hover:shadow-glow transition animate-scale-in"
-        >
-          <CardHeader>
-            <div className="flex items-start gap-4">
+          className="bg-gradient-card border border-border shadow-md hover:shadow-glow transition animate-scale-in" >
+<CardHeader>
+  <div className="flex items-start justify-between">
 
-              {/* Avatar */}
-              <div className="h-12 w-12 rounded-full bg-gradient-gold flex items-center justify-center text-primary-foreground font-bold shadow-gold">
-                {client.name
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')
-                  .toUpperCase()}
-              </div>
+    {/* Left: Avatar + Name */}
+    <div className="flex items-start gap-4">
+      <div className="h-12 w-12 rounded-full bg-gradient-gold flex items-center justify-center text-primary-foreground font-bold shadow-gold">
+        {client.name
+          .split(' ')
+          .map((n) => n[0])
+          .join('')
+          .toUpperCase()}
+      </div>
 
-              <div className="flex-1">
-                <CardTitle className="text-lg text-foreground">
-                  {client.name}
-                </CardTitle>
+      <div>
+        <CardTitle className="text-lg text-foreground">
+          {client.name}
+        </CardTitle>
 
-                {client.company && (
-                  <p className="text-sm text-muted-foreground flex items-center mt-1">
-                    <Building className="mr-1 h-3 w-3 text-gold" />
-                    {client.company}
-                  </p>
-                )}
-              </div>
-            </div>
-          </CardHeader>
+        {client.company && (
+          <p className="text-sm text-muted-foreground flex items-center mt-1">
+            <Building className="mr-1 h-3 w-3 text-gold" />
+            {client.company}
+          </p>
+        )}
+      </div>
+    </div>
+
+    {/* Right: Actions */}
+    <div className="relative">
+    <Button
+      size="icon"
+      variant="ghost"
+      className="h-8 w-8"
+      onClick={() =>
+        setOpenMenuId(openMenuId === client.id ? null : client.id)
+      }>
+      <MoreVertical className="h-4 w-4" />
+    </Button>
+
+    {openMenuId === client.id && (
+      <div className="absolute right-0 mt-2 w-36 rounded-lg border border-border bg-card shadow-lg z-50 overflow-hidden animate-scale-in origin-top-right">
+        <button
+          className="flex items-center w-full px-4 py-2 text-sm text-foreground hover:bg-accent/10 transition"
+          onClick={() => {
+            handleEditClient(client);
+            setOpenMenuId(null);
+          }}>
+          <Pencil className="mr-2 h-4 w-4 text-gold" />
+          Edit
+        </button>
+
+        <button
+          className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-500/10 transition"
+          onClick={() => {
+            handleDeleteClient(client.id);
+            setOpenMenuId(null);
+          }}>
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </button>
+      </div>
+    )}
+  </div>
+  </div>
+
+  <ClientEditModal
+    open={showEditClientModal}
+    onOpenChange={setShowEditClientModal}
+    client={selectedClient}
+  />
+</CardHeader>
+
 
           <CardContent className="space-y-4">
 

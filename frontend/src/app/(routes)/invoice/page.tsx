@@ -11,6 +11,8 @@ import StatusBadge from '@/app/components/StatsBadge';
 import InvoiceModel from '@/app/components/InvoiceModel';
 import InvoiceEditModal from '@/app/components/EditInvoiceModel';
 import InvoicesSkeleton from '@/app/components/skelton/invoiceSkelton';
+import { asyncHandlerFront } from '@/utils/asyncHandler';
+import toast from 'react-hot-toast';
 
 
 export const mockClients = [
@@ -196,6 +198,15 @@ export default function Invoices() {
     return matchesSearch && matchesStatus;
   });
 
+  const handleDeleteInvoice = async(id:string) => {
+    await asyncHandlerFront(
+      async() => {
+
+      },
+      (error) => toast.error(error.message)
+    )
+  }
+
   if(loading) return <InvoicesSkeleton />
 
   return (
@@ -281,7 +292,7 @@ export default function Invoices() {
 
             <TableHead>Amount</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead className="text-right">Action</TableHead>
+            <TableHead className="text-center">Action</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -307,29 +318,13 @@ export default function Invoices() {
                     {invoice.client.company}
                   </div>
                 </TableCell>
-
-                {/* Issue Date */}
-                <TableCell className="hidden sm:table-cell whitespace-nowrap">
-                  {new Date(invoice.issueDate).toLocaleDateString()}
-                </TableCell>
-
-                {/* Due Date */}
-                <TableCell className="hidden md:table-cell whitespace-nowrap">
-                  {new Date(invoice.dueDate).toLocaleDateString()}
-                </TableCell>
-
-                {/* Amount */}
-                <TableCell className="font-bold text-gold whitespace-nowrap">
-                  Rs {invoice.total.toLocaleString()}
-                </TableCell>
-
-                {/* Status */}
-                <TableCell>
-                  <StatusBadge status={invoice.status} />
-                </TableCell>
+                <TableCell className="hidden sm:table-cell whitespace-nowrap"> {new Date(invoice.issueDate).toLocaleDateString()}</TableCell>
+                <TableCell className="hidden md:table-cell whitespace-nowrap"> {new Date(invoice.dueDate).toLocaleDateString()} </TableCell>
+                <TableCell className="font-bold text-gold whitespace-nowrap"> Rs {invoice.total.toLocaleString()} </TableCell>
+                <TableCell> <StatusBadge status={invoice.status} /> </TableCell>
 
                 {/* Actions */}
-                <TableCell className="text-right">
+                <TableCell className="text-center">
                   <Button
                     size="sm"
                     variant="ghost"
@@ -337,9 +332,15 @@ export default function Invoices() {
                     onClick={() => {
                       setSelectedInvoice(invoice);
                       setShowEditModal(true);
-                    }}
-                  >
-                    View
+                    }}>
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-red-500 hover:bg-red-500/10 px-2"
+                    onClick={() => handleDeleteInvoice(invoice.id)}>
+                    Delete
                   </Button>
                 </TableCell>
               </TableRow>

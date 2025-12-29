@@ -9,6 +9,9 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { GraphQLFormattedError } from 'graphql';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { SettingsModule } from './settings/settings.module';
+import { ClientsModule } from './clients/clients.module';
+import { InvoicesModule } from './invoices/invoices.module';
 
 
 @Module({
@@ -38,7 +41,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       context: ({ req, res }) => ({ req, res }),
     }),
-    PrismaModule, AuthModule
+    PrismaModule, AuthModule, SettingsModule, ClientsModule, InvoicesModule
   ],
   controllers: [AppController],
   providers: [AppService],

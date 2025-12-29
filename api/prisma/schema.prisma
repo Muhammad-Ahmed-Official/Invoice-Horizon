@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider        = "prisma-client"
   output          = "../src/generated/prisma"
@@ -15,19 +9,77 @@ datasource db {
 }
 
 model User {
-  id         String     @id @default(uuid())
-  name       String  
-  email      String     @unique
-  password   String  
-  role       Role       @default(USER)
-  isVerified Boolean    @default(false)
-  otp        Int?
-  otpExpiry  DateTime?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id          String     @id @default(uuid())
+  name        String  
+  email       String     @unique
+  password    String  
+  role        Role       @default(USER)
+  isVerified  Boolean    @default(false)
+  otp         Int?
+  otpExpiry   DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  companyInfo  CompanyInfo?
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+model CompanyInfo {
+  id           String   @id @default(uuid())
+  companyName  String
+  email        String   @unique()
+  phone        String   @unique()
+  address      String  
+  taxRate      Int
+  paymentTerms String
+
+  
+  userId     String     @unique()
+  user       User       @relation(fields: [userId], references: [id])
+}
+
+model Client {
+  id          String   @id @default(uuid())
+  name        String   
+  company     String 
+  email       String       @unique()
+  phone       String 
+  role        ClientType   @default(CUSTOMER)
+
+  invoices  Invoice[]
+}
+
+enum ClientType {
+  CUSTOMER
+  VENDOR
+}
+
+model Invoice {
+  id         String         @id  @default(uuid())
+  issueDate  DateTime
+  dueDate    DateTime
+  createdAt  DateTime       @default(now())
+  total      Float
+
+  items      InvoiceItem[]
+  
+  clientId   String
+  client     Client        @relation(fields: [clientId], references: [id])
+
+  @@index([clientId])
+}
+
+
+model InvoiceItem {
+  id           String   @id @default(uuid())
+  description  String 
+  quantity     Int 
+  rate         Float
+
+  invoice      Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId    String
 }
