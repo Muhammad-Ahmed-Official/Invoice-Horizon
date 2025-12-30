@@ -28,7 +28,7 @@ export default function VerifyEmail () {
           console.log(data);
           await apiClient.verifyEmail(email as string, Number(data.otp));
           toast.success("Email verified successfully");
-          router.push("/sign-in");
+          router.push("/companyInfo");
         },
         (error) => toast.error(error.message)
       )

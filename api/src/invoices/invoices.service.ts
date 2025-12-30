@@ -6,13 +6,27 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class InvoicesService {
   constructor(private readonly prisma: PrismaService){}
-  async create(createInvoiceInput: CreateInvoiceInput, clientId:string) {
-    const invoice = await this.prisma.invoice.create({ 
-      data: { ...createInvoiceInput },
-      client: { connect: { id: clientId} },
+  async create(createInvoiceInput: CreateInvoiceInput, clientId: string) {
+    const { items, ...invoiceData } = createInvoiceInput;
+    const invoice = await this.prisma.invoice.create({
+      data: {
+        ...invoiceData,
+        client: {
+          connect: { id: clientId },
+        },
+        items: {
+          create: items.map(item => ({
+            description: item.description,
+            quantity: item.quantity,
+            // price: item.price,
+            rate: item.rate,
+          })),
+        },
+      },
     });
-    return invoice
-  }
+   return invoice;
+  };
+
 
   async findAll() {
     try {

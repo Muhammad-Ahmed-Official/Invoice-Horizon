@@ -162,6 +162,10 @@ class ApiClient {
         
     }
 
+    async createSetting(data:any){
+        
+    }
+
 }
 
 export const apiClient = new ApiClient();

@@ -20,7 +20,7 @@ export const companySchema = z.object({
     .min(5, 'Address is required')
     .max(255, 'Address is too long'),
 
-  taxRate: z.coerce
+  taxRate: z
     .number()
     .min(0, 'Tax rate cannot be negative')
     .max(100, 'Tax rate cannot exceed 100'),
