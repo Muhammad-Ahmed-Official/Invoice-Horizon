@@ -20,7 +20,7 @@ model User {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
-  companyInfo  CompanyInfo?
+  companyInfo  CompanyInfo[]
 }
 
 enum Role {

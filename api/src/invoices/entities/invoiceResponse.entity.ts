@@ -17,7 +17,7 @@ class InvoiceItem {
 @ObjectType()
 export class InvoiceResponse {
   @Field(() => String)
-  client: string;
+  clientId: string;
 
   @Field(() => String)
   issueDate: string;
@@ -27,4 +27,7 @@ export class InvoiceResponse {
 
   @Field(() => [InvoiceItem])
   items: InvoiceItem[];
+
+  @Field()
+  total: number
 }

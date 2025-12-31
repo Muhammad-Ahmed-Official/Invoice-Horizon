@@ -10,16 +10,23 @@ export class SettingsService {
     return await this.prisma.companyInfo.create({
       data: {
         ...createSettingInput, 
-        user: { connect: { id: userId} },
+        user: { connect: { id: userId } },
+      },
+      select: {
+        companyName: true,
+        email: true,
+        phone: true,
+        address: true,
+        taxRate: true,
+        paymentTerms: true,
       },
     });
-  };
+  }
 
   async findByUser(userId: string) {
     const setting = await this.prisma.companyInfo.findUnique({ where: { userId } });
     if (!setting) throw new NotFoundException("Setting not found");
-
-    return setting;
+    return setting ;
   };
 
   // findOne(id: number) {

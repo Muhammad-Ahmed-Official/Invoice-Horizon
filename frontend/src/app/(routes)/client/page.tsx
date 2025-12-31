@@ -14,6 +14,7 @@ export const mockClients = [
   {
     id: '1',
     name: 'John Smith',
+    clientType: "Customer",
     email: 'john.smith@techcorp.com',
     phone: '+1 (555) 123-4567',
     address: '123 Tech Street, San Francisco, CA 94102',
@@ -22,6 +23,7 @@ export const mockClients = [
   {
     id: '2',
     name: 'Sarah Johnson',
+    clientType: "Customer",
     email: 'sarah@designstudio.com',
     phone: '+1 (555) 234-5678',
     address: '456 Design Ave, New York, NY 10001',
@@ -30,6 +32,7 @@ export const mockClients = [
   {
     id: '3',
     name: 'Michael Brown',
+    clientType: "Customer",
     email: 'michael@startupco.com',
     phone: '+1 (555) 345-6789',
     address: '789 Startup Blvd, Austin, TX 78701',
@@ -38,6 +41,7 @@ export const mockClients = [
   {
     id: '4',
     name: 'Emily Davis',
+    clientType: "Customer",
     email: 'emily@consulting.com',
     phone: '+1 (555) 456-7890',
     address: '321 Business Rd, Boston, MA 02101',
@@ -255,44 +259,55 @@ export default function Clients() {
         <Card
           key={client.id}
           className="bg-gradient-card border border-border shadow-md hover:shadow-glow transition animate-scale-in" >
-<CardHeader>
-  <div className="flex items-start justify-between">
+        <CardHeader>
+        <div className="flex items-start justify-between">
 
-    {/* Left: Avatar + Name */}
-    <div className="flex items-start gap-4">
-      <div className="h-12 w-12 rounded-full bg-gradient-gold flex items-center justify-center text-primary-foreground font-bold shadow-gold">
-        {client.name
-          .split(' ')
-          .map((n) => n[0])
-          .join('')
-          .toUpperCase()}
+      {/* Left: Avatar + Name */}
+      <div className="flex items-start gap-4">
+        <div className="h-12 w-12 rounded-full bg-gradient-gold flex items-center justify-center text-primary-foreground font-bold shadow-gold">
+          {client.name
+            .split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase()}
+        </div>
+
+        <div>
+          <CardTitle className="text-lg text-foreground">
+            {client.name}
+          </CardTitle>
+
+          <span
+            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold border
+              ${
+                client.clientType === "CUSTOMER"
+                  ? "border-gold text-gold bg-gold/10"
+                  : "border-blue-500 text-blue-500 bg-blue-500/10"
+              }`}
+          >
+            {client.clientType}
+          </span>
+
+          {client.company && (
+            <p className="text-sm text-muted-foreground flex items-center mt-1">
+              <Building className="mr-1 h-3 w-3 text-gold" />
+              {client.company}
+            </p>
+          )}
+        </div>
       </div>
 
-      <div>
-        <CardTitle className="text-lg text-foreground">
-          {client.name}
-        </CardTitle>
-
-        {client.company && (
-          <p className="text-sm text-muted-foreground flex items-center mt-1">
-            <Building className="mr-1 h-3 w-3 text-gold" />
-            {client.company}
-          </p>
-        )}
-      </div>
-    </div>
-
-    {/* Right: Actions */}
-    <div className="relative">
-    <Button
-      size="icon"
-      variant="ghost"
-      className="h-8 w-8"
-      onClick={() =>
-        setOpenMenuId(openMenuId === client.id ? null : client.id)
-      }>
-      <MoreVertical className="h-4 w-4" />
-    </Button>
+      {/* Right: Actions */}
+      <div className="relative">
+      <Button
+        size="icon"
+        variant="ghost"
+        className="h-8 w-8"
+        onClick={() =>
+          setOpenMenuId(openMenuId === client.id ? null : client.id)
+        }>
+        <MoreVertical className="h-4 w-4" />
+      </Button>
 
     {openMenuId === client.id && (
       <div className="absolute right-0 mt-2 w-36 rounded-lg border border-border bg-card shadow-lg z-50 overflow-hidden animate-scale-in origin-top-right">

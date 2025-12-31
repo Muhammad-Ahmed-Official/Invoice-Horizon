@@ -82,6 +82,7 @@ export default function InvoiceEditModal({ showEditModal, setShowEditModal, invo
           />
         </div>
 
+
         {/* Client Name */}
         <div className="space-y-1">
           <Label className="text-sm font-medium text-foreground/80">Client Name</Label>

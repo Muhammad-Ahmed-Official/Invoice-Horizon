@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Building2, Loader, Mail, PhoneCallIcon, User } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface Props {
   open: boolean;
@@ -12,7 +13,7 @@ interface Props {
 }
 
 export default function ClientEditModal({ open, onOpenChange, client }: Props) {
-  const { register,  reset, handleSubmit, formState: { errors, isSubmitting} } = useForm();
+  const { register,  reset, handleSubmit, control, formState: { errors, isSubmitting} } = useForm();
 
   useEffect(() => {
     if (client) {
@@ -21,7 +22,8 @@ export default function ClientEditModal({ open, onOpenChange, client }: Props) {
         name: client.name,
         company: client.company,
         email: client.email,
-        phone: client.phone
+        phone: client.phone,
+        clientType: client.clientType,
       });
     }
   }, [client, reset]);
@@ -62,6 +64,25 @@ export default function ClientEditModal({ open, onOpenChange, client }: Props) {
         </div>
         {/* { errors.name && ( <p className="text-xs text-destructive mt-1">{errors.name.message}</p> )} */}
       </div>
+
+      <div className="space-y-1">
+          <Label className="text-sm font-medium text-foreground/80">Client Type</Label>
+          <Controller
+            control={control}
+            name="status"
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className="w-full h-10 sm:h-11">
+                  <SelectValue placeholder="Select Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="CUSTOMER">Customer</SelectItem>
+                  <SelectItem value="VENDOR">Vendor</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </div>
 
 
         {/* Client Company */}

@@ -18,8 +18,8 @@ export class SettingsResolver {
 
   @UseGuards(JwtAuthGuard)
   @Query(() => SettingResponse, { name: 'getSetting' })
-  findSetting(@Context() ctx) {
-    return this.settingsService.findByUser(ctx.req.user.id);
+  async findSetting(@Context() ctx) {
+    return await this.settingsService.findByUser(ctx.req.user.id);
   }
 
   // @Query(() => Setting, { name: 'setting' })

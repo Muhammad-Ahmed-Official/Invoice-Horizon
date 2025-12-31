@@ -70,7 +70,7 @@ export class AuthService {
         data: {
             isVerified: true,
             otp: null,
-            otpExpiry: null,
+            // otpExpiry: null,
         },
         });
 

@@ -1,6 +1,6 @@
-import { InputType, Int, Field, Float } from '@nestjs/graphql';
+import { InputType, Field, Float } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { ArrayMinSize, IsDate, IsInt, IsNumber, IsString, Min, ValidateNested } from 'class-validator';
+import { ArrayMinSize, ValidateNested, IsString, IsNumber, IsDate } from 'class-validator';
 
 @InputType()
 class InvoiceItemInput {
@@ -8,34 +8,29 @@ class InvoiceItemInput {
   @IsString()
   description: string;
 
-  @Field(() => Int)
-  @IsInt()
-  @Min(1)
+  @Field(() => Float)
+  @IsNumber()
   quantity: number;
 
   @Field(() => Float)
   @IsNumber()
-  @Min(0)
   rate: number;
 }
 
-
-
 @InputType()
 export class CreateInvoiceInput {
-  @Field(() => String)
-  @IsString()
-  client: string;
-
-  @Field(() => String)
+  @Field(() => Date)
+  @Type(() => Date)
   @IsDate()
-  issueDate: string;
+  issueDate: Date;
 
-  @Field(() => String)
+  @Field(() => Date)
+  @Type(() => Date)
   @IsDate()
-  dueDate: string;
+  dueDate: Date;
 
-  @Field()
+  @Field(() => Float)
+  @IsNumber()
   total: number;
 
   @Field(() => [InvoiceItemInput])
@@ -43,4 +38,4 @@ export class CreateInvoiceInput {
   @Type(() => InvoiceItemInput)
   @ArrayMinSize(1)
   items: InvoiceItemInput[];
-}
+} 

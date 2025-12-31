@@ -2,6 +2,75 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ClientResponse {
+  company: String!
+  email: String!
+  id: String!
+  name: String!
+  phone: String!
+  role: ClientType!
+}
+
+enum ClientType {
+  CUSTOMER
+  VENDOR
+}
+
+input CreateClientInput {
+  company: String!
+  email: String!
+  name: String!
+  phone: String!
+  role: ClientType
+}
+
+input CreateInvoiceInput {
+  dueDate: DateTime!
+  issueDate: DateTime!
+  items: [InvoiceItemInput!]!
+  total: Float!
+}
+
+input CreateSettingInput {
+  address: String!
+  companyName: String!
+  email: String!
+  paymentTerms: String!
+  phone: String!
+  taxRate: Int!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type InvoiceItem {
+  description: String!
+  quantity: Int!
+  rate: Float!
+}
+
+input InvoiceItemInput {
+  description: String!
+  quantity: Float!
+  rate: Float!
+}
+
+input InvoiceItems {
+  description: String!
+  quantity: Float!
+  rate: Float!
+}
+
+type InvoiceResponse {
+  clientId: String!
+  dueDate: String!
+  issueDate: String!
+  items: [InvoiceItem!]!
+  total: Int!
+}
+
 type LoginResponse {
   user: SignupResponse!
 }
@@ -12,16 +81,26 @@ input LoginUserInput {
 }
 
 type Mutation {
+  createClient(createClientInput: CreateClientInput!): ClientResponse!
+  createInvoice(clientId: String!, createInvoiceInput: CreateInvoiceInput!): InvoiceResponse!
+  createSetting(createSettingInput: CreateSettingInput!): SettingResponse!
   forgotPassword(email: String!): Response!
   login(loginUserInput: LoginUserInput!): LoginResponse!
   logout: Boolean!
+  removeClient(id: String!): Boolean!
+  removeInvoice(id: String!): Boolean!
   resendOtp(email: String!): Response!
   signUp(signupUserInput: SignupUserInput!): SignupResponse!
+  updateClient(updateClientInput: UpdateClientInput!): ClientResponse!
+  updateInvoice(updateInvoiceInput: UpdateInvoiceInput!): InvoiceResponse!
   updatePassword(newPassword: String!, oldPassword: String!, token: String!): Response!
   verifyEmail(email: String!, otp: Int!): SignupResponse!
 }
 
 type Query {
+  clients: [ClientResponse!]!
+  getSetting: SettingResponse!
+  invoices: [InvoiceResponse!]!
   me: SignupResponse
 }
 
@@ -33,6 +112,16 @@ type Response {
 enum Role {
   ADMIN
   USER
+}
+
+type SettingResponse {
+  address: String!
+  companyName: String!
+  email: String!
+  id: String!
+  paymentTerms: String!
+  phone: String!
+  taxRate: Int!
 }
 
 type SignupResponse {
@@ -54,4 +143,20 @@ input SignupUserInput {
   password: String!
   role: Role
   secretToken: String
+}
+
+input UpdateClientInput {
+  company: String
+  email: String
+  id: String!
+  name: String
+  phone: String
+}
+
+input UpdateInvoiceInput {
+  dueDate: String
+  id: String!
+  issueDate: String
+  items: [InvoiceItems]
+  total: Float
 }

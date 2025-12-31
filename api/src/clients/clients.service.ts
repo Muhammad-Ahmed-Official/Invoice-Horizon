@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreateClientInput } from './dto/create-client.input';
 import { UpdateClientInput } from './dto/update-client.input';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class ClientsService {
@@ -40,14 +41,21 @@ export class ClientsService {
     }
   };
 
-  async remove(id: string) {
+  async remove(id: string): Promise<boolean> {
     try {
-      const isDelete = await this.prisma.client.delete({ where: { id }});
-      if(!isDelete) throw new BadRequestException("No data found");
+      await this.prisma.client.delete({
+        where: { id },
+      });
+
       return true;
     } catch (error) {
-        throw new InternalServerErrorException();
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new BadRequestException('Client not found');
+        }
+      }
+      throw error;
     }
-  };
+  }
   
 }

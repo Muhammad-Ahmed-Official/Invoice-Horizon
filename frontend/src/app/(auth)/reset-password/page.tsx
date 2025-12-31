@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
 import { apiClient } from "@/lib/apiClient";
 import toast from "react-hot-toast";
+import { useSearchParams } from "next/navigation";
 
 export default function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,10 +21,13 @@ export default function ResetPasswordForm() {
     }
   });
 
+  const params = useSearchParams();
+  const token = params.get("token")
+
   const onSubmit = async(data:any) => {
     await asyncHandlerFront(
         async() => {
-          await apiClient.updatePassword(data.oldPassword, data.newPassword)
+          await apiClient.resetPassword(data.oldPassword, data.newPassword, token as string)
         },
         (error) => toast.error(error.message)
     )

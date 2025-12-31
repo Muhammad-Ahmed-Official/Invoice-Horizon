@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreateInvoiceInput } from './dto/create-invoice.input';
 import { UpdateInvoiceInput } from './dto/update-invoice.input';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class InvoicesService {
@@ -23,6 +24,9 @@ export class InvoicesService {
           })),
         },
       },
+      include: {
+        items: true, // <<< this fixes the null error
+      },
     });
    return invoice;
   };
@@ -30,22 +34,34 @@ export class InvoicesService {
 
   async findAll() {
     try {
-      const allClients = await this.prisma.invoice.findMany();
+      const allClients = await this.prisma.invoice.findMany({ include: { items: true } });
       return allClients;
     } catch (error) {
       throw new InternalServerErrorException();
     }
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} invoice`;
-  // }
+
 
   async update(id: string, updateInvoiceInput: UpdateInvoiceInput) {
     try {
-      const isClientExist = await this.prisma.client.update({
+      const { items, ...invoiceData } = updateInvoiceInput;
+      const isClientExist = await this.prisma.invoice.update({
         where: { id },
-        data: updateInvoiceInput
+        data: {
+        ...invoiceData,
+        items: items
+          ? {
+              deleteMany: {}, // remove old items
+              create: items.map(item => ({
+                description: item.description,
+                quantity: item.quantity,
+                rate: item.rate,
+              })),
+            }
+          : undefined,
+      },
+        include: { items: true }
       });
       return isClientExist;
     } catch (error) {
@@ -53,13 +69,25 @@ export class InvoicesService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<boolean> {
     try {
-      const isDelete = await this.prisma.client.delete({ where: { id }});
-      if(!isDelete) throw new BadRequestException("No data found");
+      await this.prisma.invoice.delete({
+        where: { id },
+      });
+
       return true;
     } catch (error) {
-      throw new InternalServerErrorException();
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new BadRequestException('Client not found');
+        }
+      }
+      throw error;
     }
   }
 }
+
+
+// findOne(id: number) {
+//   return `This action returns a #${id} invoice`;
+// }

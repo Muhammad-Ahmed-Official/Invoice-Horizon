@@ -31,7 +31,7 @@ export class InvoicesResolver {
     return this.invoicesService.update(updateInvoiceInput.id, updateInvoiceInput);
   }
 
-  @Mutation(() => InvoiceResponse)
+  @Mutation(() => Boolean)
   removeInvoice(@Args('id', { type: () => String }) id: string) {
     return this.invoicesService.remove(id);
   }

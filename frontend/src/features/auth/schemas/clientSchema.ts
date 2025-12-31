@@ -17,4 +17,6 @@ export const clientSchema = z.object({
     phone: z
         .string()
         .regex(/^\+?[0-9]{10,15}$/, 'Invalid phone number'),
+    clientType: z
+        .string()
 })

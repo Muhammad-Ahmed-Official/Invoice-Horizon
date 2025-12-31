@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -9,6 +9,7 @@ import z from "zod";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
 import toast from "react-hot-toast";
 import { apiClient } from "@/lib/apiClient";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface ModelProp {
     clientModel: boolean;
@@ -16,13 +17,14 @@ interface ModelProp {
 }
 
 export default function CreateClientModel({ clientModel, setClientModel }: ModelProp) {
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<z.infer<typeof clientSchema>>({
+  const { register, handleSubmit, reset, control, formState: { errors, isSubmitting } } = useForm<z.infer<typeof clientSchema>>({
     resolver: zodResolver(clientSchema),
     defaultValues: {
       name: "",
       company: "",
       email: "",
       phone: "",
+      clientType: "",
     },
   });
 
@@ -85,6 +87,30 @@ export default function CreateClientModel({ clientModel, setClientModel }: Model
             {errors.name.message}
           </p>
         )}
+      </div>
+
+      <div className="space-y-1.5 md:space-y-2">
+        <Label>Client Type</Label>
+          <Controller
+            control={control}
+            name="clientType"
+            rules={{ required: 'Client is required' }}
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {["CUSTOMER", "VENDOR"].map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        {errors.clientType && ( <p className="text-xs text-red-500"> {errors.clientType.message as string} </p> )}
       </div>
 
       {/* Company */}

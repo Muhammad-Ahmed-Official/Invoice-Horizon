@@ -140,16 +140,16 @@ class ApiClient {
     };
 
 
-    async updatePassword(oldPassword:string, newPassword:string){
+    async resetPassword(oldPassword:string, newPassword:string, token: string){
         return this.fetch({
             query: `
-            mutation updatePassword($oldPassword: String!, $newPassword: String!) {
-                updatePassword(oldPassword:$oldPassword, newPassword:$newPassword){
+            mutation updatePassword($oldPassword: String!, $newPassword: String!, $token: String!) {
+                updatePassword(oldPassword:$oldPassword, newPassword:$newPassword, token: $token){
                     success
                     message
                 }
             }`,
-            variables: { oldPassword, newPassword }
+            variables: { oldPassword, newPassword, token }
         })
     };
 

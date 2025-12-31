@@ -1,5 +1,10 @@
-import { InputType, Field } from '@nestjs/graphql';
-import { IsEmail, IsString } from 'class-validator';
+import { InputType, Field, registerEnumType } from '@nestjs/graphql';
+import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
+import { clientType } from 'src/guards/roles/roles.enum';
+
+registerEnumType(clientType, {
+  name: 'ClientType', // name of the enum in GraphQL schema
+});
 
 @InputType()
 export class CreateClientInput {
@@ -10,6 +15,11 @@ export class CreateClientInput {
   @Field(() => String)
   @IsString()
   company: string
+
+  @Field(() => clientType, { nullable: true })
+  @IsOptional()
+  @IsEnum(clientType)
+  role?: clientType;
 
   @Field(() => String)
   @IsEmail()
