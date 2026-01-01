@@ -4,10 +4,10 @@ export const clientSchema = z.object({
     name: z
         .string()
         .min(2, "name is required"),
-    company: z
-        .string()
-        .min(2, 'Company name is required')
-        .max(100, 'Company name is too long'),
+    // company: z
+    //     .string()
+    //     .min(2, 'Company name is required')
+    //     .max(100, 'Company name is too long'),
 
     email: z
         .string()
@@ -17,6 +17,7 @@ export const clientSchema = z.object({
     phone: z
         .string()
         .regex(/^\+?[0-9]{10,15}$/, 'Invalid phone number'),
-    clientType: z
+        
+    role: z
         .string()
 })

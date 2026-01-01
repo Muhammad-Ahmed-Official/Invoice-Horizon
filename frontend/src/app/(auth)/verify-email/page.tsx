@@ -6,9 +6,10 @@ import { OTPInput } from "@/app/components/ui/otpInput";
 import toast from "react-hot-toast";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
 import { useForm } from "react-hook-form";
-import { apiClient } from "@/lib/apiClient";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useMutation } from "@apollo/client/react";
+import { RESEND_OTP_MUTATION, VERIFY_EMAIL_MUTATION } from "@/graphql/auth";
 
 
 export default function VerifyEmail () {
@@ -20,25 +21,34 @@ export default function VerifyEmail () {
   const otp = watch("otp");
   const params = useSearchParams();
   const email = params.get("email")
+
+  const [verifyEmailMutation] = useMutation(VERIFY_EMAIL_MUTATION);
+
   const router = useRouter();
 
     const onSubmit = async(data: any) => {
       await asyncHandlerFront(
         async() => {
           console.log(data);
-          await apiClient.verifyEmail(email as string, Number(data.otp));
+          const { data: response } = await verifyEmailMutation({
+            variables: { email, otp: Number(data?.otp) }
+          });
           toast.success("Email verified successfully");
-          router.push("/companyInfo");
+          router.push("/sign-in");
         },
         (error) => toast.error(error.message)
       )
       reset()
     };
 
+    const [resendOtpMutation] = useMutation(RESEND_OTP_MUTATION)
+
     const handleResend = async() => {
       await asyncHandlerFront(
         async() => {
-          const response:any = await apiClient.resendOtp(email as string);
+          const { data: response }:any = await resendOtpMutation({
+            variables: { email }
+          });
           toast.success(response.resendOtp.message)
         },
         (error) => toast.error(error.message)

@@ -376,9 +376,14 @@ export type CompanyInfoUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
-export type CompanyInfoNullableScalarRelationFilter = {
-  is?: Prisma.CompanyInfoWhereInput | null
-  isNot?: Prisma.CompanyInfoWhereInput | null
+export type CompanyInfoListRelationFilter = {
+  every?: Prisma.CompanyInfoWhereInput
+  some?: Prisma.CompanyInfoWhereInput
+  none?: Prisma.CompanyInfoWhereInput
+}
+
+export type CompanyInfoOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type CompanyInfoCountOrderByAggregateInput = {
@@ -422,36 +427,46 @@ export type CompanyInfoSumOrderByAggregateInput = {
   taxRate?: Prisma.SortOrder
 }
 
-export type CompanyInfoCreateNestedOneWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput>
-  connectOrCreate?: Prisma.CompanyInfoCreateOrConnectWithoutUserInput
-  connect?: Prisma.CompanyInfoWhereUniqueInput
+export type CompanyInfoCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput> | Prisma.CompanyInfoCreateWithoutUserInput[] | Prisma.CompanyInfoUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.CompanyInfoCreateOrConnectWithoutUserInput | Prisma.CompanyInfoCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.CompanyInfoCreateManyUserInputEnvelope
+  connect?: Prisma.CompanyInfoWhereUniqueInput | Prisma.CompanyInfoWhereUniqueInput[]
 }
 
-export type CompanyInfoUncheckedCreateNestedOneWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput>
-  connectOrCreate?: Prisma.CompanyInfoCreateOrConnectWithoutUserInput
-  connect?: Prisma.CompanyInfoWhereUniqueInput
+export type CompanyInfoUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput> | Prisma.CompanyInfoCreateWithoutUserInput[] | Prisma.CompanyInfoUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.CompanyInfoCreateOrConnectWithoutUserInput | Prisma.CompanyInfoCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.CompanyInfoCreateManyUserInputEnvelope
+  connect?: Prisma.CompanyInfoWhereUniqueInput | Prisma.CompanyInfoWhereUniqueInput[]
 }
 
-export type CompanyInfoUpdateOneWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput>
-  connectOrCreate?: Prisma.CompanyInfoCreateOrConnectWithoutUserInput
-  upsert?: Prisma.CompanyInfoUpsertWithoutUserInput
-  disconnect?: Prisma.CompanyInfoWhereInput | boolean
-  delete?: Prisma.CompanyInfoWhereInput | boolean
-  connect?: Prisma.CompanyInfoWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyInfoUpdateToOneWithWhereWithoutUserInput, Prisma.CompanyInfoUpdateWithoutUserInput>, Prisma.CompanyInfoUncheckedUpdateWithoutUserInput>
+export type CompanyInfoUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput> | Prisma.CompanyInfoCreateWithoutUserInput[] | Prisma.CompanyInfoUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.CompanyInfoCreateOrConnectWithoutUserInput | Prisma.CompanyInfoCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.CompanyInfoUpsertWithWhereUniqueWithoutUserInput | Prisma.CompanyInfoUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.CompanyInfoCreateManyUserInputEnvelope
+  set?: Prisma.CompanyInfoWhereUniqueInput | Prisma.CompanyInfoWhereUniqueInput[]
+  disconnect?: Prisma.CompanyInfoWhereUniqueInput | Prisma.CompanyInfoWhereUniqueInput[]
+  delete?: Prisma.CompanyInfoWhereUniqueInput | Prisma.CompanyInfoWhereUniqueInput[]
+  connect?: Prisma.CompanyInfoWhereUniqueInput | Prisma.CompanyInfoWhereUniqueInput[]
+  update?: Prisma.CompanyInfoUpdateWithWhereUniqueWithoutUserInput | Prisma.CompanyInfoUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.CompanyInfoUpdateManyWithWhereWithoutUserInput | Prisma.CompanyInfoUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.CompanyInfoScalarWhereInput | Prisma.CompanyInfoScalarWhereInput[]
 }
 
-export type CompanyInfoUncheckedUpdateOneWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput>
-  connectOrCreate?: Prisma.CompanyInfoCreateOrConnectWithoutUserInput
-  upsert?: Prisma.CompanyInfoUpsertWithoutUserInput
-  disconnect?: Prisma.CompanyInfoWhereInput | boolean
-  delete?: Prisma.CompanyInfoWhereInput | boolean
-  connect?: Prisma.CompanyInfoWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyInfoUpdateToOneWithWhereWithoutUserInput, Prisma.CompanyInfoUpdateWithoutUserInput>, Prisma.CompanyInfoUncheckedUpdateWithoutUserInput>
+export type CompanyInfoUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput> | Prisma.CompanyInfoCreateWithoutUserInput[] | Prisma.CompanyInfoUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.CompanyInfoCreateOrConnectWithoutUserInput | Prisma.CompanyInfoCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.CompanyInfoUpsertWithWhereUniqueWithoutUserInput | Prisma.CompanyInfoUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.CompanyInfoCreateManyUserInputEnvelope
+  set?: Prisma.CompanyInfoWhereUniqueInput | Prisma.CompanyInfoWhereUniqueInput[]
+  disconnect?: Prisma.CompanyInfoWhereUniqueInput | Prisma.CompanyInfoWhereUniqueInput[]
+  delete?: Prisma.CompanyInfoWhereUniqueInput | Prisma.CompanyInfoWhereUniqueInput[]
+  connect?: Prisma.CompanyInfoWhereUniqueInput | Prisma.CompanyInfoWhereUniqueInput[]
+  update?: Prisma.CompanyInfoUpdateWithWhereUniqueWithoutUserInput | Prisma.CompanyInfoUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.CompanyInfoUpdateManyWithWhereWithoutUserInput | Prisma.CompanyInfoUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.CompanyInfoScalarWhereInput | Prisma.CompanyInfoScalarWhereInput[]
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -487,15 +502,49 @@ export type CompanyInfoCreateOrConnectWithoutUserInput = {
   create: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput>
 }
 
-export type CompanyInfoUpsertWithoutUserInput = {
-  update: Prisma.XOR<Prisma.CompanyInfoUpdateWithoutUserInput, Prisma.CompanyInfoUncheckedUpdateWithoutUserInput>
-  create: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput>
-  where?: Prisma.CompanyInfoWhereInput
+export type CompanyInfoCreateManyUserInputEnvelope = {
+  data: Prisma.CompanyInfoCreateManyUserInput | Prisma.CompanyInfoCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
-export type CompanyInfoUpdateToOneWithWhereWithoutUserInput = {
-  where?: Prisma.CompanyInfoWhereInput
+export type CompanyInfoUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.CompanyInfoWhereUniqueInput
+  update: Prisma.XOR<Prisma.CompanyInfoUpdateWithoutUserInput, Prisma.CompanyInfoUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.CompanyInfoCreateWithoutUserInput, Prisma.CompanyInfoUncheckedCreateWithoutUserInput>
+}
+
+export type CompanyInfoUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.CompanyInfoWhereUniqueInput
   data: Prisma.XOR<Prisma.CompanyInfoUpdateWithoutUserInput, Prisma.CompanyInfoUncheckedUpdateWithoutUserInput>
+}
+
+export type CompanyInfoUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.CompanyInfoScalarWhereInput
+  data: Prisma.XOR<Prisma.CompanyInfoUpdateManyMutationInput, Prisma.CompanyInfoUncheckedUpdateManyWithoutUserInput>
+}
+
+export type CompanyInfoScalarWhereInput = {
+  AND?: Prisma.CompanyInfoScalarWhereInput | Prisma.CompanyInfoScalarWhereInput[]
+  OR?: Prisma.CompanyInfoScalarWhereInput[]
+  NOT?: Prisma.CompanyInfoScalarWhereInput | Prisma.CompanyInfoScalarWhereInput[]
+  id?: Prisma.StringFilter<"CompanyInfo"> | string
+  companyName?: Prisma.StringFilter<"CompanyInfo"> | string
+  email?: Prisma.StringFilter<"CompanyInfo"> | string
+  phone?: Prisma.StringFilter<"CompanyInfo"> | string
+  address?: Prisma.StringFilter<"CompanyInfo"> | string
+  taxRate?: Prisma.IntFilter<"CompanyInfo"> | number
+  paymentTerms?: Prisma.StringFilter<"CompanyInfo"> | string
+  userId?: Prisma.StringFilter<"CompanyInfo"> | string
+}
+
+export type CompanyInfoCreateManyUserInput = {
+  id?: string
+  companyName: string
+  email: string
+  phone: string
+  address: string
+  taxRate: number
+  paymentTerms: string
 }
 
 export type CompanyInfoUpdateWithoutUserInput = {
@@ -509,6 +558,16 @@ export type CompanyInfoUpdateWithoutUserInput = {
 }
 
 export type CompanyInfoUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  companyName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  taxRate?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentTerms?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type CompanyInfoUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string

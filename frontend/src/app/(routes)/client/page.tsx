@@ -1,13 +1,16 @@
 'use client'
 
-import { useState } from 'react';
-import { Search, Mail, Phone, Building, User, Users, Pencil, Trash2, MoreVertical } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Search, Mail, Phone, User, Users, Pencil, Trash2, MoreVertical } from 'lucide-react';
 import { Input } from '../../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import CreateClientModel from '@/app/components/CreateClientModel';
 import ClientsSkeleton from '../../components/skelton/clientSkelton';
 import ClientEditModal from '@/app/components/ClientEditModel';
+import { useMutation, useQuery } from '@apollo/client/react';
+import { ALL_CLIENTS, REMOVE_CLIENT } from '@/graphql/client';
+import { GetClientTypes } from '@/features/auth/types/client.Types';
 
 
 export const mockClients = [
@@ -184,13 +187,25 @@ const mockInvoices = [
 export default function Clients() {
   const [searchTerm, setSearchTerm] = useState('');
   const [clientModel, setClientModel] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [clients, setClients] = useState<any []>([]);
 
-  const filteredClients = mockClients.filter(
+  const { data, loading, } = useQuery<GetClientTypes>(ALL_CLIENTS, {
+    fetchPolicy: 'cache-first',
+  });
+  
+  
+  useEffect(() => {
+    if(data?.clients){
+      setClients(data?.clients);
+    }
+  }, [data]);
+
+  // console.log(clients)
+
+  const filteredClients = clients.filter(
     (client) =>
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.company?.toLowerCase().includes(searchTerm.toLowerCase())
+      client.email.toLowerCase().includes(searchTerm.toLowerCase()) 
   );
 
   const getClientInvoiceStats = (clientId: string) => {
@@ -202,8 +217,13 @@ export default function Clients() {
     return { total: clientInvoices.length, totalAmount, paidAmount };
   };
 
+  const [removeClient] = useMutation(REMOVE_CLIENT)
+
   const handleDeleteClient = async(id:string) => {
-    // setFilter(() => prev.filter((c) => c.id !== id))
+    await removeClient({
+      variables: { id },
+    });
+    setClients((prev) => prev.filter((c) => c.id !== id))
   }
 
   const [selectedClient, setSelectedClient] = useState(null);
@@ -256,134 +276,171 @@ export default function Clients() {
     {filteredClients.map((client) => {
       const stats = getClientInvoiceStats(client.id);
       return (
-        <Card
-          key={client.id}
-          className="bg-gradient-card border border-border shadow-md hover:shadow-glow transition animate-scale-in" >
-        <CardHeader>
-        <div className="flex items-start justify-between">
+<Card
+  key={client.id}
+  className="
+    bg-gradient-card 
+    border border-border 
+    shadow-md 
+    hover:shadow-glow 
+    transition 
+    animate-scale-in
+  "
+>
+  <CardHeader className="pb-4">
+    <div className="flex items-center justify-between gap-4">
 
-      {/* Left: Avatar + Name */}
-      <div className="flex items-start gap-4">
-        <div className="h-12 w-12 rounded-full bg-gradient-gold flex items-center justify-center text-primary-foreground font-bold shadow-gold">
+      {/* Left */}
+      <div className="flex items-center gap-4">
+        {/* Avatar */}
+        <div className="
+          h-11 w-11 
+          rounded-full 
+          bg-gradient-gold 
+          flex items-center justify-center 
+          text-primary-foreground 
+          font-semibold 
+          shadow-gold
+          shrink-0
+        ">
           {client.name
-            .split(' ')
-            .map((n) => n[0])
-            .join('')
+            .split(" ")
+            .map((n:string) => n[0])
+            .join("")
             .toUpperCase()}
         </div>
 
-        <div>
-          <CardTitle className="text-lg text-foreground">
-            {client.name}
-          </CardTitle>
+        {/* Name + Meta */}
+        <div className="space-y-1">
+          <div>
+            <CardTitle className="text-base pb-1 font-semibold leading-none">
+              {client.name}
+            </CardTitle>
 
-          <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold border
-              ${
-                client.clientType === "CUSTOMER"
-                  ? "border-gold text-gold bg-gold/10"
-                  : "border-blue-500 text-blue-500 bg-blue-500/10"
-              }`}
-          >
-            {client.clientType}
-          </span>
+            <span
+              className={`
+                rounded-full px-2 py-0.5 
+                text-[11px] font-medium border
+                ${
+                  client.role === "CUSTOMER"
+                    ? "border-gold/40 text-gold bg-gold/10"
+                    : "border-accent/40 text-accent bg-accent/10"
+                }
+              `}
+            >
+              {client.role}
+            </span>
+          </div>
 
-          {client.company && (
-            <p className="text-sm text-muted-foreground flex items-center mt-1">
-              <Building className="mr-1 h-3 w-3 text-gold" />
-              {client.company}
-            </p>
-          )}
         </div>
       </div>
 
       {/* Right: Actions */}
       <div className="relative">
-      <Button
-        size="icon"
-        variant="ghost"
-        className="h-8 w-8"
-        onClick={() =>
-          setOpenMenuId(openMenuId === client.id ? null : client.id)
-        }>
-        <MoreVertical className="h-4 w-4" />
-      </Button>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="
+            h-8 w-8 
+            text-muted-foreground
+            hover:text-foreground 
+            hover:bg-accent/10
+          "
+          onClick={() =>
+            setOpenMenuId(openMenuId === client.id ? null : client.id)
+          }
+        >
+          <MoreVertical className="h-4 w-4" />
+        </Button>
 
-    {openMenuId === client.id && (
-      <div className="absolute right-0 mt-2 w-36 rounded-lg border border-border bg-card shadow-lg z-50 overflow-hidden animate-scale-in origin-top-right">
-        <button
-          className="flex items-center w-full px-4 py-2 text-sm text-foreground hover:bg-accent/10 transition"
-          onClick={() => {
-            handleEditClient(client);
-            setOpenMenuId(null);
-          }}>
-          <Pencil className="mr-2 h-4 w-4 text-gold" />
-          Edit
-        </button>
+        {openMenuId === client.id && (
+          <div className="
+            absolute right-0 mt-2 w-36 
+            rounded-xl 
+            border border-border 
+            bg-popover 
+            shadow-lg 
+            z-50 
+            overflow-hidden 
+            animate-scale-in 
+            origin-top-right
+          ">
+            <button
+              className="
+                flex items-center w-full px-4 py-2 text-sm 
+                hover:bg-accent/10 transition
+              "
+              onClick={() => {
+                handleEditClient(client);
+                setOpenMenuId(null);
+              }}
+            >
+              <Pencil className="mr-2 h-4 w-4 text-gold" />
+              Edit
+            </button>
 
-        <button
-          className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-500/10 transition"
-          onClick={() => {
-            handleDeleteClient(client.id);
-            setOpenMenuId(null);
-          }}>
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete
-        </button>
+            <button
+              className="
+                flex items-center w-full px-4 py-2 text-sm 
+                text-destructive 
+                hover:bg-destructive/10 transition
+              "
+              onClick={() => {
+                handleDeleteClient(client.id);
+                setOpenMenuId(null);
+              }}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
+            </button>
+          </div>
+        )}
       </div>
-    )}
-  </div>
-  </div>
+    </div>
 
-  <ClientEditModal
-    open={showEditClientModal}
-    onOpenChange={setShowEditClientModal}
-    client={selectedClient}
-  />
-</CardHeader>
+          <ClientEditModal
+            open={showEditClientModal}
+            onOpenChange={setShowEditClientModal}
+            client={selectedClient}
+          />
+        </CardHeader>
+        <CardContent className="space-y-5">
 
-
-          <CardContent className="space-y-4">
-
-            {/* Contact */}
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center text-muted-foreground">
-                <Mail className="mr-2 h-4 w-4 text-gold" />
-                {client.email}
-              </div>
-
-              <div className="flex items-center text-muted-foreground">
-                <Phone className="mr-2 h-4 w-4 text-gold" />
-                {client.phone}
-              </div>
+        <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Mail className="h-4 w-4 text-gold shrink-0" />
+              <span className="truncate">{client.email}</span>
             </div>
 
-            {/* Stats */}
-            <div className="border-t border-border pt-4">
-              <div className="grid grid-cols-2 gap-4 text-center">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Phone className="h-4 w-4 text-gold shrink-0" />
+              <span>{client.phone}</span>
+            </div>
+          </div>
 
-                <div>
-                  <p className="text-2xl font-bold text-foreground">
-                    {stats.total}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Invoices
-                  </p>
-                </div>
+          {/* Stats */}
+          <div className="border-t border-border pt-2">
+            <div className="grid grid-cols-2 gap-5 text-center">
+              <div className="space-y-1">
+                <p className="text-2xl font-semibold text-foreground">
+                  {stats.total}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Invoices
+                </p>
+              </div>
 
-                <div>
-                  <p className="text-2xl font-bold text-gold">
-                    ${stats.totalAmount.toLocaleString()}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Total Billed
-                  </p>
-                </div>
-
+              <div className="space-y-1">
+                <p className="text-2xl font-semibold text-gold">
+                  ${stats.totalAmount.toLocaleString()}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Total Billed
+                </p>
               </div>
             </div>
-
-          </CardContent>
+          </div>
+        </CardContent>
         </Card>
       );
     })}

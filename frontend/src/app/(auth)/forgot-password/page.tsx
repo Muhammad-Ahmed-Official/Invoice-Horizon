@@ -6,10 +6,11 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useForm } from "react-hook-form";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
-import { apiClient } from "@/lib/apiClient";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import { FORGOT_PASSWORD_MUTATION } from "@/graphql/auth";
+import { useMutation } from "@apollo/client/react";
 
 
 export default function ForgotPasswordForm() {
@@ -19,10 +20,14 @@ export default function ForgotPasswordForm() {
     }
   });
 
+  const [forgotPasswordMutation] = useMutation(FORGOT_PASSWORD_MUTATION);
+
   const onSubmit = async(data:any) => {
     await asyncHandlerFront(
         async() => {
-          await apiClient.forgotPassword(data)
+          const { data: response } = await forgotPasswordMutation({
+            variables: { email: data.email }
+          });
         },
         (error:any) => toast.error(error.mess)
     )

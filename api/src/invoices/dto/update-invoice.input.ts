@@ -1,6 +1,11 @@
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { CreateInvoiceInput } from './create-invoice.input';
-import { InputType, Field, Int, PartialType, Float } from '@nestjs/graphql';
+import { InputType, Field,  PartialType, Float, registerEnumType } from '@nestjs/graphql';
+import { statusType } from 'src/guards/roles/roles.enum';
+
+registerEnumType(statusType, {
+  name: 'statusType'
+})
 
 @InputType()
 class InvoiceItems {
@@ -23,10 +28,6 @@ export class UpdateInvoiceInput {
   @IsString()
   id: string;
 
-  // @Field(() => String, { nullable: true })
-  // @IsString()
-  // clientId?: string;
-
   @Field(() => String, { nullable: true })
   @IsString()
   issueDate?: string;
@@ -39,7 +40,16 @@ export class UpdateInvoiceInput {
   @IsNumber()
   total?: number;
 
+  @Field(() => statusType, { nullable: true })
+  @IsOptional()
+  @IsEnum(statusType)
+  status?: statusType
+
   @Field(() => [InvoiceItems], { nullable: 'itemsAndList' })
   @IsArray()
   items?: InvoiceItems[];
 }
+
+  // @Field(() => String, { nullable: true })
+  // @IsString()
+  // clientId?: string;

@@ -23,16 +23,16 @@ import { InvoicesModule } from './invoices/invoices.module';
       introspection: true,
       fieldResolverEnhancers: ['guards'],
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      // formatError: (formattedError: GraphQLFormattedError, error: unknown): GraphQLFormattedError => {
-      //     return {
-      //       message: formattedError.message,
-      //       path: formattedError.path, // can be undefined
-      //       extensions: {
-      //         statusCode: (error as any)?.extensions?.exception?.status || 500,
-      //         timestamp: new Date().toISOString(),
-      //       },
-      //     };
-      //   },
+      formatError: (formattedError: GraphQLFormattedError, error: unknown): GraphQLFormattedError => {
+          return {
+            message: formattedError.message,
+            path: formattedError.path, // can be undefined
+            extensions: {
+              statusCode: (error as any)?.extensions?.exception?.status || 500,
+              timestamp: new Date().toISOString(),
+            },
+          };
+        },
       sortSchema: true,
       // playground: true,
       buildSchemaOptions: {

@@ -13,21 +13,19 @@ import z from "zod"
 import { signInSchema } from "@/features/auth/schemas/signInSchema"
 import Link from "next/link"
 import { asyncHandlerFront } from "@/utils/asyncHandler"
-import { apiClient } from "@/lib/apiClient"
 import AuthLeftSide from "@/app/components/AuthLeftSide"
 import { useRouter } from "next/navigation"
+import { useMutation } from "@apollo/client/react"
+import { LOGIN_MUTATION } from "@/graphql/auth"
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false)
-  const {
-    register,
-    reset,
-    handleSubmit,
-    formState: { isSubmitting, errors },
-  } = useForm<z.infer<typeof signInSchema>>({
+  const { register, reset, handleSubmit, formState: { isSubmitting, errors } } = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: { email: "", password: "" },
   })
+
+  const [loginMutation] = useMutation(LOGIN_MUTATION);
 
   const router = useRouter();
 
@@ -35,8 +33,15 @@ export default function SignInForm() {
     await asyncHandlerFront(
       async() => {
         console.log(data) 
-        await apiClient.signIn(data);
-        router.push('/home');
+        const { data: response } = await loginMutation({
+        variables: {
+          input: {
+            email: data.email,
+            password: data.password,
+          },
+        },
+      });
+      router.push('/companyInfo');
       },
       (error:any) => toast.error(error.message)
     )

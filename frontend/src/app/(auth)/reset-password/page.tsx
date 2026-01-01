@@ -8,9 +8,10 @@ import { Label } from "@/app/components/ui/label";
 import { Input } from "@/app/components/ui/input";
 import { useForm } from "react-hook-form";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
-import { apiClient } from "@/lib/apiClient";
 import toast from "react-hot-toast";
 import { useSearchParams } from "next/navigation";
+import { RESET_PASSWORD_MUTATION } from "@/graphql/auth";
+import { useMutation } from "@apollo/client/react";
 
 export default function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,10 +25,14 @@ export default function ResetPasswordForm() {
   const params = useSearchParams();
   const token = params.get("token")
 
+  const [resetPasswordMutation] = useMutation(RESET_PASSWORD_MUTATION);
+
   const onSubmit = async(data:any) => {
     await asyncHandlerFront(
         async() => {
-          await apiClient.resetPassword(data.oldPassword, data.newPassword, token as string)
+          const { data: response } = await resetPasswordMutation({
+            variables: { oldPassword: data.oldPassword,  newPassword: data.newPassword, token }
+          });
         },
         (error) => toast.error(error.message)
     )

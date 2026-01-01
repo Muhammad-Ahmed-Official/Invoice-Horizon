@@ -2,8 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ClientRes {
+  name: String!
+}
+
 type ClientResponse {
-  company: String!
   email: String!
   id: String!
   name: String!
@@ -17,7 +20,6 @@ enum ClientType {
 }
 
 input CreateClientInput {
-  company: String!
   email: String!
   name: String!
   phone: String!
@@ -28,6 +30,7 @@ input CreateInvoiceInput {
   dueDate: DateTime!
   issueDate: DateTime!
   items: [InvoiceItemInput!]!
+  status: statusType
   total: Float!
 }
 
@@ -64,10 +67,13 @@ input InvoiceItems {
 }
 
 type InvoiceResponse {
+  client: ClientRes!
   clientId: String!
-  dueDate: String!
-  issueDate: String!
+  dueDate: DateTime!
+  id: String!
+  issueDate: DateTime!
   items: [InvoiceItem!]!
+  status: statusType
   total: Int!
 }
 
@@ -94,6 +100,7 @@ type Mutation {
   updateClient(updateClientInput: UpdateClientInput!): ClientResponse!
   updateInvoice(updateInvoiceInput: UpdateInvoiceInput!): InvoiceResponse!
   updatePassword(newPassword: String!, oldPassword: String!, token: String!): Response!
+  updateSetting(updateSettingInput: UpdateSettingInput!): SettingResponse!
   verifyEmail(email: String!, otp: Int!): SignupResponse!
 }
 
@@ -146,7 +153,6 @@ input SignupUserInput {
 }
 
 input UpdateClientInput {
-  company: String
   email: String
   id: String!
   name: String
@@ -158,5 +164,21 @@ input UpdateInvoiceInput {
   id: String!
   issueDate: String
   items: [InvoiceItems]
+  status: statusType
   total: Float
+}
+
+input UpdateSettingInput {
+  address: String!
+  companyName: String!
+  email: String!
+  paymentTerms: String!
+  phone: String!
+  taxRate: Int!
+}
+
+enum statusType {
+  OVERDUE
+  PAID
+  PENDING
 }

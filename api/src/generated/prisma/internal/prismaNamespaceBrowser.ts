@@ -107,7 +107,6 @@ export type CompanyInfoScalarFieldEnum = (typeof CompanyInfoScalarFieldEnum)[key
 export const ClientScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  company: 'company',
   email: 'email',
   phone: 'phone',
   role: 'role'
@@ -122,6 +121,7 @@ export const InvoiceScalarFieldEnum = {
   dueDate: 'dueDate',
   createdAt: 'createdAt',
   total: 'total',
+  status: 'status',
   clientId: 'clientId'
 } as const
 

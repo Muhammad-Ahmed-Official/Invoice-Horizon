@@ -1,23 +1,19 @@
 'use client'
 
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { apiClient } from "@/lib/apiClient";
-import { asyncHandlerFront } from "@/utils/asyncHandler";
-import toast from "react-hot-toast";
+import { ME_QUERY } from "@/graphql/auth";
+import { useQuery } from "@apollo/client/react";
 
 const AuthContext = createContext<any>(null);
 
 export function AuthProvider({children}: {children:ReactNode}){
     const [user, setUser] = useState<any>(null);
-
-    const getUser = async() => {
-        await asyncHandlerFront(
-          async() => {
-            const response:any = await apiClient.isUser();
-            setUser(response?.me)
-          },
-          (error) => toast.error(error.message)
-        )
+    const { data } = useQuery<any>(ME_QUERY, {
+      fetchPolicy: "cache-first"
+    });
+    const getUser = () => {
+      if(!data?.me) return;
+      setUser(data.me)  
     }
 
     useEffect(() => {

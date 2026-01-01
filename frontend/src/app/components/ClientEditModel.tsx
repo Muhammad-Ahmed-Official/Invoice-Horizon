@@ -5,6 +5,8 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Building2, Loader, Mail, PhoneCallIcon, User } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { useMutation } from "@apollo/client/react";
+import { UPDATE_CLIENT_MUTATION } from "@/graphql/client";
 
 interface Props {
   open: boolean;
@@ -18,9 +20,9 @@ export default function ClientEditModal({ open, onOpenChange, client }: Props) {
   useEffect(() => {
     if (client) {
       reset({
-        invoiceNumber: client.invoiceNumber,
+        id: client.id,
         name: client.name,
-        company: client.company,
+        // company: client.company,
         email: client.email,
         phone: client.phone,
         clientType: client.clientType,
@@ -28,8 +30,13 @@ export default function ClientEditModal({ open, onOpenChange, client }: Props) {
     }
   }, [client, reset]);
 
-  const onSubmit = (data:any) => {
-    console.log("UPDATED DATA:", data);
+  const [updateClientMutation] = useMutation(UPDATE_CLIENT_MUTATION);
+
+  const onSubmit = async(data:any) => {
+    // console.log("UPDATED DATA:", data);
+    await updateClientMutation({
+      variables: { input: data },
+    });
     onOpenChange(false);
   };
 
@@ -65,7 +72,7 @@ export default function ClientEditModal({ open, onOpenChange, client }: Props) {
         {/* { errors.name && ( <p className="text-xs text-destructive mt-1">{errors.name.message}</p> )} */}
       </div>
 
-      <div className="space-y-1">
+        <div className="space-y-1">
           <Label className="text-sm font-medium text-foreground/80">Client Type</Label>
           <Controller
             control={control}
@@ -86,7 +93,7 @@ export default function ClientEditModal({ open, onOpenChange, client }: Props) {
 
 
         {/* Client Company */}
-        <div className="space-y-1.5 md:space-y-2">
+        {/* <div className="space-y-1.5 md:space-y-2">
         <Label htmlFor="company" className="text-sm font-medium">
           Company
         </Label>
@@ -97,8 +104,7 @@ export default function ClientEditModal({ open, onOpenChange, client }: Props) {
             {...register('company')}
           />
         </div>
-        
-      </div>
+      </div> */}
 
          {/* Email */}
       <div className="space-y-1.5 md:space-y-2">

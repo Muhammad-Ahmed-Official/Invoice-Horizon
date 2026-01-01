@@ -1,6 +1,16 @@
-import {  Int, Field, Float, ObjectType } from '@nestjs/graphql';
-import { Type } from 'class-transformer';
-import { ArrayMinSize, IsInt, IsNumber, IsString, Min, ValidateNested } from 'class-validator';
+import {  Int, Field, Float, ObjectType, registerEnumType, GraphQLISODateTime } from '@nestjs/graphql';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { statusType } from 'src/guards/roles/roles.enum';
+
+registerEnumType(statusType, {
+  name: 'statusType'
+})
+
+@ObjectType()
+class ClientRes {
+  @Field()
+  name: string;
+}
 
 @ObjectType()
 class InvoiceItem {
@@ -17,16 +27,28 @@ class InvoiceItem {
 @ObjectType()
 export class InvoiceResponse {
   @Field(() => String)
+  @IsString()
+  id: string;
+
+  @Field(() => String)
   clientId: string;
 
-  @Field(() => String)
-  issueDate: string;
+  @Field(() => ClientRes)
+  client: ClientRes; 
 
-  @Field(() => String)
-  dueDate: string;
+  @Field(() => GraphQLISODateTime)
+  issueDate: Date;
+
+  @Field(() => GraphQLISODateTime)
+  dueDate: Date;
 
   @Field(() => [InvoiceItem])
   items: InvoiceItem[];
+
+  @Field(() => statusType, { nullable: true })
+  @IsOptional()
+  @IsEnum(statusType)
+  status?: statusType
 
   @Field()
   total: number

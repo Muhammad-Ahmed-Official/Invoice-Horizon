@@ -23,3 +23,12 @@ export const ClientType = {
 } as const
 
 export type ClientType = (typeof ClientType)[keyof typeof ClientType]
+
+
+export const statusType = {
+  PAID: 'PAID',
+  PENDING: 'PENDING',
+  OVERDUE: 'OVERDUE'
+} as const
+
+export type statusType = (typeof statusType)[keyof typeof statusType]

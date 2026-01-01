@@ -12,10 +12,11 @@ import toast from "react-hot-toast"
 import z from "zod"
 import Link from "next/link"
 import { asyncHandlerFront } from "@/utils/asyncHandler"
-import { apiClient } from "@/lib/apiClient"
 import AuthLeftSide from "@/app/components/AuthLeftSide"
 import { signUpSchema } from "@/features/auth/schemas/signUpSchema"
 import { useRouter } from "next/navigation"
+import { useMutation } from "@apollo/client/react"
+import { SIGNUP_MUTATION } from "@/graphql/auth"
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -29,13 +30,23 @@ export default function SignUpForm() {
     defaultValues: { name: "", email: "", password: "" },
   })
 
+  const [signupMutation] = useMutation(SIGNUP_MUTATION);
+
   const router = useRouter();
 
   const onSubmit = async(data: z.infer<typeof signUpSchema>) => {
     await asyncHandlerFront(
       async() => {
         console.log(data) 
-        await apiClient.signUp(data)
+        const { data: response } = await signupMutation({
+          variables: {
+            input: {
+              name: data.name,
+              email: data.email,
+              password: data.password,
+            },
+          },
+        });
         router.push(`/verify-email?email=${data.email}`)
       },
       (error:any) => toast.error(error.message)

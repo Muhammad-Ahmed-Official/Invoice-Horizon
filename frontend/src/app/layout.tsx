@@ -3,8 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/redux/authProvider";
-import Sidebar from "./components/Sidebar";
-import Footer from "./components/Footer";
+import ApolloWrapper from "@/provider/apollo-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,10 +28,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen">
-        <AuthProvider>
-            {children}
-          <Toaster position="bottom-right" />
-        </AuthProvider>
+        <ApolloWrapper>
+          <AuthProvider>
+              {children}
+            <Toaster position="bottom-right" />
+          </AuthProvider>
+        </ApolloWrapper>
       </body>
     </html>
   );

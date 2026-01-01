@@ -4,13 +4,14 @@ import { Home, FileText, Users, Settings, LucideLogOut, Power } from 'lucide-rea
 import { useAuth } from "@/redux/authProvider";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
 import toast from "react-hot-toast";
-import { apiClient } from "@/lib/apiClient";
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { usePathname } from 'next/navigation';
 import logo from "../../../public/logo2.png"
 import Image from 'next/image';
+import { useMutation } from '@apollo/client/react';
+import { LOGOUT_MUTATION } from '@/graphql/auth';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
@@ -23,10 +24,12 @@ export default function Sidebar() {
   const { setUser } = useAuth();
   const pathname = usePathname();
 
+  const [logoutMutation] = useMutation(LOGOUT_MUTATION)
+
   const handleLogout = async () => {
     await asyncHandlerFront(
       async () => {
-        await apiClient.logout();
+        await logoutMutation()
         setUser(null);
       },
       (error) => toast.error(error?.message)

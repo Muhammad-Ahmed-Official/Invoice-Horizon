@@ -22,6 +22,13 @@ export class SettingsResolver {
     return await this.settingsService.findByUser(ctx.req.user.id);
   }
 
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => SettingResponse)
+  updateSetting(@Args('updateSettingInput') updateSettingInput: UpdateSettingInput, @Context() ctx){
+    return this.settingsService.update(updateSettingInput, ctx.req.user.id);
+  }
+
   // @Query(() => Setting, { name: 'setting' })
   // findOne(@Args('id', { type: () => Int }) id: number) {
   //   return this.settingsService.findOne(id);

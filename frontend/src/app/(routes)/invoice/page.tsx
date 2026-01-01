@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, Filter, Download, PlusCircle, FileText } from 'lucide-react';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
@@ -13,6 +13,9 @@ import InvoiceEditModal from '@/app/components/EditInvoiceModel';
 import InvoicesSkeleton from '@/app/components/skelton/invoiceSkelton';
 import { asyncHandlerFront } from '@/utils/asyncHandler';
 import toast from 'react-hot-toast';
+import { useMutation, useQuery } from '@apollo/client/react';
+import { ALL_INVOICES, REMOVE_INVOICE } from '@/graphql/invoice';
+import { getInvoiceData } from '@/features/auth/types/invoiceType';
 
 
 export const mockClients = [
@@ -183,25 +186,41 @@ export const mockInvoices = [
 
 
 export default function Invoices() {
-  const [loading, setLoading] = useState(false);
+  const [invoices, setInoices] = useState<any>([]);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const filteredInvoices = mockInvoices.filter((invoice) => {
-    const matchesSearch =
-      invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoice.client.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
+  const filteredInvoices = invoices?.filter((invoice:any) => {
+  const matchesSearch =
+    invoice?.id?.toLowerCase().includes(searchTerm?.toLowerCase()) || invoice?.client?.name?.toLowerCase().includes(searchTerm?.toLowerCase() );
+    const matchesStatus = statusFilter === 'all' || invoice?.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const { data, loading } = useQuery<getInvoiceData>(ALL_INVOICES, {
+    fetchPolicy: "cache-first",
+  });
+
+  
+  useEffect(() => {
+    if(data?.invoices){
+      setInoices(data?.invoices)
+    }
+  }, [data])
+
+  
+  const [removeInvoice] = useMutation(REMOVE_INVOICE)
 
   const handleDeleteInvoice = async(id:string) => {
     await asyncHandlerFront(
       async() => {
-
+        await removeInvoice({
+          variables: { id }
+        });
+        setInoices((prev:any) => prev.filter((c:any) => c.id !== id))
       },
       (error) => toast.error(error.message)
     )
@@ -298,30 +317,30 @@ export default function Invoices() {
 
         {/* TABLE BODY */}
         <TableBody>
-          {filteredInvoices.length ? (
-            filteredInvoices.map((invoice: any) => (
+          {filteredInvoices?.length ? (
+            filteredInvoices?.map((invoice: any) => (
               <TableRow
-                key={invoice.id}
+                key={invoice?.id}
                 className="hover:bg-accent/5 transition"
               >
                 {/* Invoice Number */}
                 <TableCell className="font-semibold text-gold whitespace-nowrap">
-                  {invoice.invoiceNumber}
+                  {`INV-${invoice?.id?.split('-')[0]}`}
                 </TableCell>
 
                 {/* Client */}
                 <TableCell>
                   <div className="font-semibold text-foreground leading-tight">
-                    {invoice.client.name}
+                    {invoice?.client?.name}
                   </div>
-                  <div className="text-xs text-muted-foreground hidden sm:block">
+                  {/* <div className="text-xs text-muted-foreground hidden sm:block">
                     {invoice.client.company}
-                  </div>
+                  </div> */}
                 </TableCell>
-                <TableCell className="hidden sm:table-cell whitespace-nowrap"> {new Date(invoice.issueDate).toLocaleDateString()}</TableCell>
-                <TableCell className="hidden md:table-cell whitespace-nowrap"> {new Date(invoice.dueDate).toLocaleDateString()} </TableCell>
-                <TableCell className="font-bold text-gold whitespace-nowrap"> Rs {invoice.total.toLocaleString()} </TableCell>
-                <TableCell> <StatusBadge status={invoice.status} /> </TableCell>
+                <TableCell className="hidden sm:table-cell whitespace-nowrap"> {new Date(invoice?.issueDate).toLocaleDateString()}</TableCell>
+                <TableCell className="hidden md:table-cell whitespace-nowrap"> {new Date(invoice?.dueDate).toLocaleDateString()} </TableCell>
+                <TableCell className="font-bold text-gold whitespace-nowrap"> Rs {invoice?.total.toLocaleString()} </TableCell>
+                <TableCell> <StatusBadge status={invoice?.status?.toLowerCase()} /> </TableCell>
 
                 {/* Actions */}
                 <TableCell className="text-center">
@@ -339,7 +358,7 @@ export default function Invoices() {
                     size="sm"
                     variant="ghost"
                     className="text-red-500 hover:bg-red-500/10 px-2"
-                    onClick={() => handleDeleteInvoice(invoice.id)}>
+                    onClick={() => handleDeleteInvoice(invoice?.id)}>
                     Delete
                   </Button>
                 </TableCell>

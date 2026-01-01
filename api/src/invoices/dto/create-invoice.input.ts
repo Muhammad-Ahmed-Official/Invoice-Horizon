@@ -1,6 +1,11 @@
-import { InputType, Field, Float } from '@nestjs/graphql';
+import { InputType, Field, Float, registerEnumType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { ArrayMinSize, ValidateNested, IsString, IsNumber, IsDate } from 'class-validator';
+import { ArrayMinSize, ValidateNested, IsString, IsNumber, IsDate, IsOptional, IsEnum } from 'class-validator';
+import { statusType } from 'src/guards/roles/roles.enum';
+
+registerEnumType(statusType, {
+  name: 'statusType'
+})
 
 @InputType()
 class InvoiceItemInput {
@@ -32,6 +37,10 @@ export class CreateInvoiceInput {
   @Field(() => Float)
   @IsNumber()
   total: number;
+
+  @Field(() => statusType, { nullable: true })
+  @IsEnum(statusType)
+  status: statusType
 
   @Field(() => [InvoiceItemInput])
   @ValidateNested({ each: true })

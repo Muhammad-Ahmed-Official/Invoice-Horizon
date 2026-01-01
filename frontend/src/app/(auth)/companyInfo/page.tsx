@@ -3,16 +3,16 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Building2, Mail, MapPin, Percent, Clock, ArrowRight, Sparkles, Phone, Building2Icon, Loader } from "lucide-react";
+import { Building2, Mail, MapPin, Percent, Clock, ArrowRight, Phone, Loader } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { companySchema } from "@/features/auth/schemas/companySchema";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
 import toast from "react-hot-toast";
-import { apiClient } from "@/lib/apiClient";
 import { useRouter } from "next/navigation";
-
+import { useMutation } from "@apollo/client/react";
+import { SETTING_MUTATION } from "@/graphql/setting";
 
 
 const CompanyInfo = () => {
@@ -29,12 +29,25 @@ const CompanyInfo = () => {
     },
   });
 
+  const [settingMutation] = useMutation(SETTING_MUTATION);
+
   const onSubmit = async (data: z.infer<typeof companySchema>) => {
     await asyncHandlerFront(
       async() => {
         console.log("Company Info:", data);
-        await apiClient.createSetting(data);
-        router.push('/sign-in')
+        const { data: response } = await settingMutation({
+          variables: {
+            input: {
+              companyName: data.companyName,
+              email: data.email,
+              phone: data.phone,
+              address: data.address,
+              taxRate: data.taxRate,
+              paymentTerms: data.paymentTerms,
+            },
+          },
+        });
+        router.push('/home')
       },
       (error) => toast.error(error.message)
     ),
@@ -52,9 +65,6 @@ const CompanyInfo = () => {
       <div className="w-full max-w-lg relative z-10">
         {/* Header */}
         <div className="text-center mb-4 animate-fade-in">
-          {/* <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-gold shadow-gold mb-6">
-            <Sparkles className="w-8 h-8 text-primary-foreground" />
-          </div> */}
           <h1 className="text-2xl md:text-4xl font-sans font-bold text-foreground mb-1">
             Complete Your <span className="text-gradient-gold">Profile</span>
           </h1>

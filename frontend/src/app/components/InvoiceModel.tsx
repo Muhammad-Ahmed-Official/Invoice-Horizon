@@ -1,6 +1,5 @@
-''
+// 'use client'
 
-import { useState } from 'react'
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -12,18 +11,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { Loader, Plus, Trash2 } from 'lucide-react';
+import { Loader } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import z from 'zod';
 import { invoiceSchema } from '@/features/auth/schemas/invoiceSchema';
 import { asyncHandlerFront } from '@/utils/asyncHandler';
-import { apiClient } from '@/lib/apiClient';
+import { useMutation } from '@apollo/client/react';
+import { ALL_INVOICES, INVOICE_MUTATION } from '@/graphql/invoice';
 
 export const mockClients = [
   {
-    id: '1',
-    name: 'John Smith',
+    id: '590d0736-1736-4ad2-bd09-7cc017f9e23e',
+    name: 'Aleeza',
     email: 'john.smith@techcorp.com',
     phone: '+1 (555) 123-4567',
     address: '123 Tech Street, San Francisco, CA 94102',
@@ -189,36 +189,68 @@ export const mockInvoices = [
 
 
 export default function InvoiceModel({showModal, setShowModal} : any) {
-  const {register, control, reset, handleSubmit, watch, setValue, formState: { isSubmitting, errors } } = useForm({
+  const {register, control, reset, handleSubmit, watch, formState: { isSubmitting, errors } } = useForm({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
-      client: "",
+      clientId: "",
       issueDate: undefined,
       dueDate: undefined,
+      status: "PENDING",
+      total: 1,
       items: [{ description: "", quantity: 1, rate: 0 }],
     }
   })
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "items"
-  });
+    const { fields, append, remove } = useFieldArray({
+      control,
+      name: "items"
+    });
 
-  const items = watch("items") as any;
+    const items = watch("items") as any;
 
-  const subtotal = items.reduce((sum:any, item:any) => sum + item.quantity * item.rate, 0);
-  const tax = subtotal * 0.18;
-  const total = subtotal + tax;
+    const subtotal = items.reduce((sum:any, item:any) => sum + item.quantity * item.rate, 0);
+    const tax = subtotal * 0.18;
+    const total = subtotal + tax;
 
+    const [invoiceMutation] = useMutation<any>(INVOICE_MUTATION, {
+      update(cache, { data }) {
+        if (!data?.createInvoice) return;
+
+        const existing = cache.readQuery<any>({
+          query: ALL_INVOICES,
+        });
+
+        if (!existing?.invoices) return;
+
+        cache.writeQuery({
+          query: ALL_INVOICES,
+          data: {
+            invoices: [...existing.invoices, data.createInvoice],
+          },
+        });
+      },
+    });
 
     const onsubmit = async(data:z.infer< typeof invoiceSchema>) => {
       console.log(data);
       await asyncHandlerFront(
         async() => {
-          // await apiClient
+          await invoiceMutation({
+            variables: {
+              clientId: data.clientId,  
+              input: {
+                issueDate: data.issueDate,
+                dueDate: data.dueDate,
+                items: data.items,
+                total: Number(total),
+                status: data.status, 
+              },
+            },
+          }); 
         }
       )
       reset();
+      setShowModal(false);
     }
 
   return (
@@ -253,7 +285,7 @@ export default function InvoiceModel({showModal, setShowModal} : any) {
                 <Label>Client</Label>
                 <Controller
                   control={control}
-                  name="client"
+                  name="clientId"
                   rules={{ required: 'Client is required' }}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
@@ -262,20 +294,36 @@ export default function InvoiceModel({showModal, setShowModal} : any) {
                       </SelectTrigger>
                       <SelectContent>
                         {mockClients.map((c) => (
-                          <SelectItem key={c.id} value={c.name}>
-                            {c.name} – {c.company}
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   )}
                 />
-                {errors.client && (
-                  <p className="text-xs text-red-500">
-                    {errors.client.message as string}
-                  </p>
-                )}
+                {errors.clientId && ( <p className="text-xs text-red-500"> {errors.clientId.message as string} </p> )}
               </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-foreground/80">Client Type</Label>
+                    <Controller
+                      control={control}
+                      name="status"
+                      render={({ field }) => (
+                        <Select value={field.value ?? undefined} onValueChange={field.onChange}>
+                          <SelectTrigger className="w-full h-10 sm:h-11">
+                            <SelectValue placeholder="Select Status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="PAID">Paid</SelectItem>
+                            <SelectItem value="PENDING">Pending</SelectItem>
+                            <SelectItem value="OVERDUE">Overdue</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
 
               {/* Issue Date */}
               <div className="space-y-2">
@@ -478,8 +526,3 @@ export default function InvoiceModel({showModal, setShowModal} : any) {
   )
 )
 }
-
-
-{/* <Button type="submit" className="bg-gradient-gold text-primary-foreground shadow-gold hover:shadow-glow">
-Create Invoice
-</Button> */}

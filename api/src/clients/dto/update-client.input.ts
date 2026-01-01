@@ -13,9 +13,9 @@ export class UpdateClientInput {
   @IsString()
   name?: string;
 
-  @Field(() => String, { nullable: true })
-  @IsString()
-  company?: string;
+  // @Field(() => String, { nullable: true })
+  // @IsString()
+  // company?: string;
 
   @Field(() => String, { nullable: true })
   @IsEmail()

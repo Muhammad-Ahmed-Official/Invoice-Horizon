@@ -850,7 +850,6 @@ export type CompanyInfoScalarFieldEnum = (typeof CompanyInfoScalarFieldEnum)[key
 export const ClientScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  company: 'company',
   email: 'email',
   phone: 'phone',
   role: 'role'
@@ -865,6 +864,7 @@ export const InvoiceScalarFieldEnum = {
   dueDate: 'dueDate',
   createdAt: 'createdAt',
   total: 'total',
+  status: 'status',
   clientId: 'clientId'
 } as const
 
@@ -1000,6 +1000,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'statusType'
+ */
+export type EnumstatusTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'statusType'>
+    
+
+
+/**
+ * Reference to a field of type 'statusType[]'
+ */
+export type ListEnumstatusTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'statusType[]'>
     
 
 /**

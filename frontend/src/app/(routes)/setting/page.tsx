@@ -12,23 +12,15 @@ import z from 'zod';
 import { companySchema } from '@/features/auth/schemas/companySchema';
 import { asyncHandlerFront } from '@/utils/asyncHandler';
 import toast from 'react-hot-toast';
-import { apiClient } from '@/lib/apiClient';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import SettingsSkeleton from '@/app/components/skelton/settingSkelton';
-
-const dummyData = {
-  companyName: "TechCorp Inc.",
-  email: "info@techcorp.com",
-  phone: "+1 (555) 123-4567",
-  address: "123 Tech Street, San Francisco, CA 94102",
-  taxRate: 18,
-  paymentTerms: "Net 30",
-};
+import { useMutation, useQuery } from '@apollo/client/react';
+import { ME_SETTING, UPDATE_SETTING } from '@/graphql/setting';
+import { GetSettingData } from '@/features/auth/types/settingType';
 
 
 export default function Settings() {
-  const [loading, setLoading] =  useState(false);
-  const {register, reset, handleSubmit, watch, formState: { isSubmitting, errors } } = useForm({
+  const {register, reset, handleSubmit, formState: { isSubmitting, errors } } = useForm({
     resolver: zodResolver(companySchema),
     defaultValues: {
       companyName: "",
@@ -39,30 +31,48 @@ export default function Settings() {
       paymentTerms: "",
     }
   })
+  
+  const { data, loading } = useQuery<GetSettingData>(ME_SETTING, {
+    fetchPolicy: 'cache-first',
+  });
 
   useEffect(() => {
-    reset(dummyData);
-  }, [reset]);
-
-  // useEffect(() => {
-  //   if (invoice) {
-  //     reset({
-  //       companyName: invoice.compnayName,
-  //       email: invoice.email,
-  //       phone: invoice.phone,
-  //       address: invoice.address,
-  //       taxRate: invoice.taxRate,
-  //       paymentTerms: invoice.paymentTerms,
-  //     });
-  //   }
-  // }, [invoice, reset]);
-  
+    if (data?.getSetting) {
+      reset({
+        companyName: data.getSetting.companyName ?? "",
+        email: data.getSetting.email ?? "",
+        phone: data.getSetting.phone ?? "",
+        address: data.getSetting.address ?? "",
+        taxRate: Number(data.getSetting.taxRate) ?? 0,
+        paymentTerms: data.getSetting.paymentTerms ?? "",
+      });
+    }
+  }, [data, reset]);
+// GetSettingData, { input: z.infer<typeof companySchema> }
+  const [updateSetting] = useMutation<any>(UPDATE_SETTING, {
+   update(cache, { data:  mutationData}) {
+    if(!mutationData) return;
+    
+    cache.writeQuery({
+      query: ME_SETTING,
+      data: {
+        getSetting: mutationData?.updateSetting
+      }
+    })
+   }
+  });
 
   const onsubmit = async (data:z.infer<typeof companySchema>) => {
     await asyncHandlerFront(
       async() => {
         console.log(data)
-        await apiClient.setting(data);
+        const input = {
+          ...data,
+          taxRate: Number(data.taxRate)
+        }
+        await updateSetting({
+          variables: { input },
+        });
       },
       (error) => toast.error(error.message)
     )
@@ -81,9 +91,8 @@ export default function Settings() {
   </div>
 
   <form onSubmit={handleSubmit(onsubmit)} className="mx-auto max-w-4xl space-y-4 sm:space-y-6 pb-16 sm:pb-20 md:pb-24">
-    {/* Company Information Card */}
     <Card className="bg-gradient-card border border-border shadow-md">
-      <CardHeader className="p-4 sm:p-6">
+      <CardHeader className="p-4">
         <CardTitle className="text-base sm:text-lg md:text-xl font-semibold text-foreground">
           Company Information
         </CardTitle>
@@ -92,12 +101,12 @@ export default function Settings() {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
-        <div className="space-y-1.5 sm:space-y-2">
+      <CardContent className="space-y-3 sm:space-y-4 p-4  pt-0">
+        <div className="space-y-1.5">
           <Label className="text-xs sm:text-sm font-medium text-foreground/80">
             Company Name
           </Label>
-          <div className="py-1 sm:py-2">
+          <div className="py-2">
             <Input
               id="companyName"
               type="text"
@@ -113,11 +122,11 @@ export default function Settings() {
         </div>
 
         <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
-          <div className="space-y-1.5 sm:space-y-2">
+          <div className="space-y-1.5">
             <Label className="text-xs sm:text-sm font-medium text-foreground/80">
               Email
             </Label>
-            <div className="py-1 sm:py-2">
+            <div className="py-2">
               <Input
                 id="email"
                 type="email"
@@ -132,11 +141,11 @@ export default function Settings() {
             )}
           </div>
 
-          <div className="space-y-1.5 sm:space-y-2">
+          <div className="space-y-1.5">
             <Label className="text-xs sm:text-sm font-medium text-foreground/80">
               Phone
             </Label>
-            <div className="py-1 sm:py-2">
+            <div className="py-2">
               <Input
                 id="phone"
                 type="tel"
@@ -152,11 +161,11 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="space-y-1.5 sm:space-y-2">
+        <div className="space-y-1.5">
           <Label className="text-xs sm:text-sm font-medium text-foreground/80">
             Address
           </Label>
-          <div className="py-1 sm:py-2">
+          <div className="py-2">
             <Textarea
               id="address"
               rows={2}
@@ -175,7 +184,7 @@ export default function Settings() {
 
     {/* Invoice Settings Card */}
     <Card className="bg-gradient-card border border-border shadow-md">
-      <CardHeader className="p-4 sm:p-6">
+      <CardHeader className="p-4">
         <CardTitle className="text-base sm:text-lg md:text-xl font-semibold text-foreground">
           Invoice Settings
         </CardTitle>
@@ -184,8 +193,8 @@ export default function Settings() {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="grid gap-3 sm:gap-4 md:grid-cols-2 p-4 sm:p-6 pt-0">
-        <div className="space-y-1.5 sm:space-y-2">
+      <CardContent className="grid gap-3 sm:gap-4 md:grid-cols-2 p-4  pt-0">
+        <div className="space-y-1.5">
           <Label className="text-xs sm:text-sm font-medium text-foreground/80">
             Tax Rate (%)
           </Label>
@@ -194,7 +203,7 @@ export default function Settings() {
               id="taxRate"
               type="number"
               className="bg-input border-border text-foreground focus:ring-gold h-9 sm:h-10 md:h-11 text-sm sm:text-base"
-              {...register("taxRate")}
+              {...register("taxRate", { valueAsNumber: true })}
             />
           </div>
           {errors.taxRate && (
@@ -224,7 +233,6 @@ export default function Settings() {
       </CardContent>
     </Card>
 
-    {/* Logo Card */}
     <Card className="bg-gradient-card border border-border shadow-md">
       <CardHeader className="p-4 sm:p-6">
         <CardTitle className="text-base sm:text-lg md:text-xl font-semibold text-foreground">
@@ -259,7 +267,6 @@ export default function Settings() {
       </CardContent>
     </Card>
 
-    {/* Actions */}
     <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-4 sm:pt-6">
       <Button
         variant="outline"
@@ -281,7 +288,7 @@ export default function Settings() {
         ) : (
           <span className="flex items-center justify-center gap-1.5">
             <Save className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            Save Changes
+            Update setting
           </span>
         )}
       </Button>

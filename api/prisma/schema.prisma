@@ -45,7 +45,6 @@ model CompanyInfo {
 model Client {
   id          String   @id @default(uuid())
   name        String   
-  company     String 
   email       String       @unique()
   phone       String 
   role        ClientType   @default(CUSTOMER)
@@ -64,6 +63,7 @@ model Invoice {
   dueDate    DateTime
   createdAt  DateTime       @default(now())
   total      Float
+  status    statusType
 
   items      InvoiceItem[]
   
@@ -71,6 +71,12 @@ model Invoice {
   client     Client        @relation(fields: [clientId], references: [id])
 
   @@index([clientId])
+}
+
+enum statusType {
+  PAID
+  PENDING
+  OVERDUE
 }
 
 
@@ -83,3 +89,5 @@ model InvoiceItem {
   invoice      Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   invoiceId    String
 }
+
+// company     String 

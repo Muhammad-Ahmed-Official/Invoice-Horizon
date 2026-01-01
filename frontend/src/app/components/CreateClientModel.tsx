@@ -3,13 +3,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Building2, Loader, Mail, PhoneCallIcon, User } from "lucide-react";
+import { Loader, Mail, PhoneCallIcon, User } from "lucide-react";
 import { clientSchema } from "@/features/auth/schemas/clientSchema";
 import z from "zod";
 import { asyncHandlerFront } from "@/utils/asyncHandler";
 import toast from "react-hot-toast";
-import { apiClient } from "@/lib/apiClient";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { useMutation } from "@apollo/client/react";
+import { ALL_CLIENTS, CLIENT_MUTATION } from "@/graphql/client";
 
 interface ModelProp {
     clientModel: boolean;
@@ -21,18 +22,38 @@ export default function CreateClientModel({ clientModel, setClientModel }: Model
     resolver: zodResolver(clientSchema),
     defaultValues: {
       name: "",
-      company: "",
       email: "",
       phone: "",
-      clientType: "",
+      role: "",
     },
+  });
+
+  const [clientMutation] = useMutation<any>(CLIENT_MUTATION, {
+    update(cache, { data }) {
+      if(!data?.createClient) return 
+      
+    const existing = cache.readQuery<any>({
+      query: ALL_CLIENTS,
+    });
+
+     if (!existing) return;
+     
+    cache.writeQuery({
+        query: ALL_CLIENTS,
+        data: {
+          clients: [...existing.clients, data?.createClient],
+        },
+      });
+    }
   });
 
   const onSubmit = async (data: z.infer<typeof clientSchema>) => {
     await asyncHandlerFront(
       async() => {
-        console.log("Client Data:", data);
-        await apiClient.createClient(data);
+        // console.log("Client Data:", data);
+        await clientMutation({
+          variables: { input: data },
+        });        
       },
       (error) => toast.error(error.message) 
     )
@@ -93,7 +114,7 @@ export default function CreateClientModel({ clientModel, setClientModel }: Model
         <Label>Client Type</Label>
           <Controller
             control={control}
-            name="clientType"
+            name="role"
             rules={{ required: 'Client is required' }}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
@@ -110,11 +131,11 @@ export default function CreateClientModel({ clientModel, setClientModel }: Model
               </Select>
             )}
           />
-        {errors.clientType && ( <p className="text-xs text-red-500"> {errors.clientType.message as string} </p> )}
+        {errors.role && ( <p className="text-xs text-red-500"> {errors.role.message as string} </p> )}
       </div>
 
       {/* Company */}
-      <div className="space-y-1.5 md:space-y-2">
+      {/* <div className="space-y-1.5 md:space-y-2">
         <Label htmlFor="company" className="text-sm font-medium">
           Company
         </Label>
@@ -133,7 +154,7 @@ export default function CreateClientModel({ clientModel, setClientModel }: Model
             {errors.company.message}
           </p>
         )}
-      </div>
+      </div> */}
 
       {/* Email */}
       <div className="space-y-1.5 md:space-y-2">
@@ -167,7 +188,7 @@ export default function CreateClientModel({ clientModel, setClientModel }: Model
           <Input
             id="phone"
             type="tel"
-            placeholder="+1 (555) 123-4567"
+            placeholder="+923451647891"
             className="pl-9 sm:pl-10 h-9 sm:h-10 text-sm sm:text-base"
             {...register('phone')}
           />

@@ -12,7 +12,7 @@ export class ClientsService {
       const client = await this.prisma.client.create({ data: { ...createClientInput }});
       return client;
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException("Failed to create client");
     }
   };
 
@@ -21,7 +21,7 @@ export class ClientsService {
       const allClients = await this.prisma.client.findMany();
       return allClients;
     } catch (error) {
-      throw new InternalServerErrorException();
+       throw new InternalServerErrorException("Failed to get clients");
     }
   };
 
@@ -37,7 +37,7 @@ export class ClientsService {
       });
       return isClientExist;
     } catch (error) {
-      throw new InternalServerErrorException();
+       throw new InternalServerErrorException("Failed to update clients");
     }
   };
 
@@ -54,8 +54,8 @@ export class ClientsService {
           throw new BadRequestException('Client not found');
         }
       }
-      throw error;
+       throw new InternalServerErrorException("Failed to delete clients");
     }
-  }
+  };
   
 }
