@@ -4,7 +4,7 @@ import { SettingResponse } from './entities/settingResponse.entity';
 import { CreateSettingInput } from './dto/create-setting.input';
 import { UpdateSettingInput } from './dto/update-setting.input';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Resolver(() => SettingResponse)
 export class SettingsResolver {

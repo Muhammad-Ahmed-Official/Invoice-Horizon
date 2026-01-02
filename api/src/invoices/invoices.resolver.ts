@@ -4,7 +4,7 @@ import { InvoiceResponse } from './entities/invoiceResponse.entity';
 import { CreateInvoiceInput } from './dto/create-invoice.input';
 import { UpdateInvoiceInput } from './dto/update-invoice.input';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { InvoiceStats } from './entities/invoiceStatsResponse.entity';
 
 @Resolver(() => InvoiceResponse)

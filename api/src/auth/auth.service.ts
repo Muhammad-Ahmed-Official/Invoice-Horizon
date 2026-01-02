@@ -3,7 +3,7 @@ import { User } from '../generated/prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { SignupUserInput } from './dto/signUp-user';
 import { PrismaService } from '../prisma/prisma.service';
-import { Role } from 'src/guards/roles/roles.enum';
+import { Role } from '../guards/roles/roles.enum';
 import bcrypt from 'bcrypt'
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from 'email/emailService';

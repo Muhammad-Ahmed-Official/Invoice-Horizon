@@ -4,7 +4,7 @@ import { ClientResponse } from './entities/clientResponse.entity';
 import { CreateClientInput } from './dto/create-client.input';
 import { UpdateClientInput } from './dto/update-client.input';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Resolver(() => ClientResponse)
 export class ClientsResolver {  
