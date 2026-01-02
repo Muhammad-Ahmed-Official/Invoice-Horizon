@@ -1,6 +1,6 @@
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import { IsEmail, IsString } from 'class-validator';
-import { clientType } from 'src/guards/roles/roles.enum';
+import { clientType } from '../../guards/roles/roles.enum';
 
 registerEnumType(clientType, { name: 'clientType' });
 

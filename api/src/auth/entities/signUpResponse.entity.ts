@@ -1,6 +1,6 @@
 import { ObjectType, Field, Int, registerEnumType, ID } from '@nestjs/graphql';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { Role } from 'src/guards/roles/roles.enum';
+import { Role } from '../../guards/roles/roles.enum';
 
 registerEnumType(Role, { name: 'Role' });
 

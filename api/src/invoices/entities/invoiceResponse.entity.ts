@@ -1,6 +1,6 @@
 import {  Int, Field, Float, ObjectType, registerEnumType, GraphQLISODateTime } from '@nestjs/graphql';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { statusType } from 'src/guards/roles/roles.enum';
+import { statusType } from '../../guards/roles/roles.enum';
 
 registerEnumType(statusType, {
   name: 'statusType'

@@ -1,7 +1,7 @@
 import { InputType, Field, Float, registerEnumType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { ArrayMinSize, ValidateNested, IsString, IsNumber, IsDate, IsOptional, IsEnum } from 'class-validator';
-import { statusType } from 'src/guards/roles/roles.enum';
+import { ArrayMinSize, ValidateNested, IsString, IsNumber, IsDate,IsEnum } from 'class-validator';
+import { statusType } from '../../guards/roles/roles.enum';
 
 registerEnumType(statusType, {
   name: 'statusType'

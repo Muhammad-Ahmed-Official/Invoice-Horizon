@@ -1,7 +1,6 @@
 import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { CreateInvoiceInput } from './create-invoice.input';
 import { InputType, Field,  PartialType, Float, registerEnumType } from '@nestjs/graphql';
-import { statusType } from 'src/guards/roles/roles.enum';
+import { statusType } from '../../guards/roles/roles.enum';
 
 registerEnumType(statusType, {
   name: 'statusType'
