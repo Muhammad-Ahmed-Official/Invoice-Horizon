@@ -22,7 +22,7 @@ import { InvoicesModule } from './invoices/invoices.module';
       csrfPrevention: false,
       introspection: true,
       fieldResolverEnhancers: ['guards'],
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: true,
       formatError: (formattedError: GraphQLFormattedError, error: unknown): GraphQLFormattedError => {
           return {
             message: formattedError.message,
