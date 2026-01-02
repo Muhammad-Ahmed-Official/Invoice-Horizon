@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Role } from '../guards/roles/roles.enum';
 import bcrypt from 'bcrypt'
 import { ConfigService } from '@nestjs/config';
-import { EmailService } from 'email/emailService';
+import { EmailService } from '../../email/emailService';
 
 @Injectable()
 export class AuthService {
