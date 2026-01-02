@@ -1,8 +1,8 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { User } from 'src/generated/prisma/client';
+import { User } from '../generated/prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { SignupUserInput } from './dto/signUp-user';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Role } from 'src/guards/roles/roles.enum';
 import bcrypt from 'bcrypt'
 import { ConfigService } from '@nestjs/config';
