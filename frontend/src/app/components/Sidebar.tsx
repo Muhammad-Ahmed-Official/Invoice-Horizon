@@ -14,7 +14,7 @@ import { useMutation } from '@apollo/client/react';
 import { LOGOUT_MUTATION } from '@/graphql/auth';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Dashboard', href: '/home', icon: Home },
   { name: 'Invoices', href: '/invoice', icon: FileText },
   { name: 'Clients', href: '/client', icon: Users },
   { name: 'Settings', href: '/setting', icon: Settings },
@@ -39,7 +39,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden md:flex fixed top-0 left-0 h-screen w-68 flex-col bg-gradient-dark text-foreground shadow-lg">
+      <div className="hidden md:flex fixed top-0 left-0 h-screen w-68 flex-col bg-black text-foreground">
         {/* LOGO */}
         <div className="flex h-20 items-center border-b border-border px-6">
           <div className="flex items-center gap-3">
@@ -83,7 +83,7 @@ export default function Sidebar() {
         <div className="border-t border-border p-4">
           <Button
             onClick={handleLogout}
-            className="w-full bg-secondary text-secondary-foreground hover:bg-destructive hover:text-destructive-foreground">
+            className="w-full shadow-none bg-destructive text-destructive-foreground hover:bg-red-400">
             <LucideLogOut className="mr-2 h-5 w-5" /> Logout
           </Button>
         </div>

@@ -8,20 +8,18 @@ const AuthContext = createContext<any>(null);
 
 export function AuthProvider({children}: {children:ReactNode}){
     const [user, setUser] = useState<any>(null);
-    const { data } = useQuery<any>(ME_QUERY, {
+    const { data, loading } = useQuery<any>(ME_QUERY, {
       fetchPolicy: "cache-first"
     });
-    const getUser = () => {
-      if(!data?.me) return;
-      setUser(data.me)  
-    }
-
     useEffect(() => {
-      getUser();
-    }, []);
+      if (loading) return;
+      if (!data?.me) return;
+
+      setUser(data.me);
+    }, [data, loading]);
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, loading, setUser }}>
       {children}
     </AuthContext.Provider>
   );

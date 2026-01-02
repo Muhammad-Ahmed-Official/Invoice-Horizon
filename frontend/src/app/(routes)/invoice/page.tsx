@@ -16,240 +16,142 @@ import toast from 'react-hot-toast';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { ALL_INVOICES, REMOVE_INVOICE } from '@/graphql/invoice';
 import { getInvoiceData } from '@/features/auth/types/invoiceType';
+import jsPDF from "jspdf";
+import autoTable from 'jspdf-autotable';
+import { ALL_CLIENTS } from '@/graphql/client';
+import { GetClientTypes } from '@/features/auth/types/client.Types';
 
+type InvoiceTableColumn = {
+key: string;
+label: string;
+className?: string;
+};
 
-export const mockClients = [
-  {
-    id: '1',
-    name: 'John Smith',
-    email: 'john.smith@techcorp.com',
-    phone: '+1 (555) 123-4567',
-    address: '123 Tech Street, San Francisco, CA 94102',
-    company: 'TechCorp Inc.',
-  },
-  {
-    id: '2',
-    name: 'Sarah Johnson',
-    email: 'sarah@designstudio.com',
-    phone: '+1 (555) 234-5678',
-    address: '456 Design Ave, New York, NY 10001',
-    company: 'Design Studio LLC',
-  },
-  {
-    id: '3',
-    name: 'Michael Brown',
-    email: 'michael@startupco.com',
-    phone: '+1 (555) 345-6789',
-    address: '789 Startup Blvd, Austin, TX 78701',
-    company: 'StartupCo',
-  },
-  {
-    id: '4',
-    name: 'Emily Davis',
-    email: 'emily@consulting.com',
-    phone: '+1 (555) 456-7890',
-    address: '321 Business Rd, Boston, MA 02101',
-    company: 'Davis Consulting',
-  },
-];
+const invoiceTableColumns: InvoiceTableColumn[] = [
+{ key: "invoice", label: "Invoice #", className: "whitespace-nowrap" },
+{ key: "client", label: "Client" },
+{ key: "issueDate", label: "Issue Date", className: "table-cell" },
+{ key: "dueDate", label: "Due Date", className: "table-cell" },
+{ key: "amount", label: "Amount" },
+{ key: "status", label: "Status" },
+{ key: "action", label: "Action", className: "text-center" },
+] as const;
 
-export const mockInvoices = [
-  {
-    id: '1',
-    invoiceNumber: 'INV-001',
-    clientId: '1',
-    client: mockClients[0],
-    issueDate: '2024-12-01',
-    dueDate: '2024-12-31',
-    status: 'paid',
-    items: [
-      {
-        id: '1',
-        description: 'Web Development Services',
-        quantity: 40,
-        rate: 150,
-        amount: 6000,
-      },
-      {
-        id: '2',
-        description: 'UI/UX Design',
-        quantity: 20,
-        rate: 120,
-        amount: 2400,
-      },
-    ],
-    subtotal: 8400,
-    tax: 840,
-    total: 9240,
-    notes: 'Thank you for your business!',
-  },
-  {
-    id: '2',
-    invoiceNumber: 'INV-002',
-    clientId: '2',
-    client: mockClients[1],
-    issueDate: '2024-12-10',
-    dueDate: '2025-01-10',
-    status: 'pending',
-    items: [
-      {
-        id: '1',
-        description: 'Brand Identity Design',
-        quantity: 1,
-        rate: 5000,
-        amount: 5000,
-      },
-      {
-        id: '2',
-        description: 'Marketing Materials',
-        quantity: 10,
-        rate: 200,
-        amount: 2000,
-      },
-    ],
-    subtotal: 7000,
-    tax: 700,
-    total: 7700,
-  },
-  {
-    id: '3',
-    invoiceNumber: 'INV-003',
-    clientId: '3',
-    client: mockClients[2],
-    issueDate: '2024-11-15',
-    dueDate: '2024-12-15',
-    status: 'overdue',
-    items: [
-      {
-        id: '1',
-        description: 'Mobile App Development',
-        quantity: 80,
-        rate: 180,
-        amount: 14400,
-      },
-    ],
-    subtotal: 14400,
-    tax: 1440,
-    total: 15840,
-    notes: 'Payment overdue. Please remit payment immediately.',
-  },
-  {
-    id: '4',
-    invoiceNumber: 'INV-004',
-    clientId: '4',
-    client: mockClients[3],
-    issueDate: '2024-12-20',
-    dueDate: '2025-01-20',
-    status: 'pending',
-    items: [
-      {
-        id: '1',
-        description: 'Business Consulting',
-        quantity: 15,
-        rate: 250,
-        amount: 3750,
-      },
-      {
-        id: '2',
-        description: 'Strategic Planning',
-        quantity: 10,
-        rate: 300,
-        amount: 3000,
-      },
-    ],
-    subtotal: 6750,
-    tax: 675,
-    total: 7425,
-  },
-  {
-    id: '5',
-    invoiceNumber: 'INV-005',
-    clientId: '1',
-    client: mockClients[0],
-    issueDate: '2024-12-15',
-    dueDate: '2025-01-15',
-    status: 'paid',
-    items: [
-      {
-        id: '1',
-        description: 'Website Maintenance',
-        quantity: 1,
-        rate: 1500,
-        amount: 1500,
-      },
-    ],
-    subtotal: 1500,
-    tax: 150,
-    total: 1650,
-  },
-];
+const statusOptions = [
+{ value: "all", label: "All" },
+{ value: "paid", label: "Paid" },
+{ value: "pending", label: "Pending" },
+{ value: "overdue", label: "Overdue" },
+] as const;
+
 
 
 export default function Invoices() {
-  const [invoices, setInoices] = useState<any>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+const [invoices, setInvoices] = useState<any>([]);
+const [showModal, setShowModal] = useState(false);
+const [showEditModal, setShowEditModal] = useState(false);
+const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const filteredInvoices = invoices?.filter((invoice:any) => {
-  const matchesSearch =
-    invoice?.id?.toLowerCase().includes(searchTerm?.toLowerCase()) || invoice?.client?.name?.toLowerCase().includes(searchTerm?.toLowerCase() );
-    const matchesStatus = statusFilter === 'all' || invoice?.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+const [searchTerm, setSearchTerm] = useState('');
+const [statusFilter, setStatusFilter] = useState('all');
+const filteredInvoices = invoices?.filter((invoice:any) => {
+const matchesSearch =
+  invoice?.id?.toLowerCase().includes(searchTerm?.toLowerCase()) || invoice?.client?.name?.toLowerCase().includes(searchTerm?.toLowerCase() );
+  const matchesStatus = statusFilter === 'all' || invoice?.status.toLowerCase() === statusFilter;
+  return matchesSearch && matchesStatus;
+});
 
-  const { data, loading } = useQuery<getInvoiceData>(ALL_INVOICES, {
-    fetchPolicy: "cache-first",
-  });
+const { data, loading } = useQuery<getInvoiceData>(ALL_INVOICES, {
+  fetchPolicy: "cache-first",
+});
 
-  
-  useEffect(() => {
-    if(data?.invoices){
-      setInoices(data?.invoices)
-    }
-  }, [data])
+useEffect(() => {
+  if(data?.invoices){
+    setInvoices(data?.invoices)
+  }
+}, [data])
 
+  const { data:client} = useQuery<GetClientTypes>(ALL_CLIENTS);
+  const clients = client ? client.clients: []
   
   const [removeInvoice] = useMutation(REMOVE_INVOICE)
-
   const handleDeleteInvoice = async(id:string) => {
     await asyncHandlerFront(
       async() => {
         await removeInvoice({
           variables: { id }
         });
-        setInoices((prev:any) => prev.filter((c:any) => c.id !== id))
+        setInvoices((prev:any) => prev.filter((c:any) => c.id !== id))
       },
       (error) => toast.error(error.message)
     )
   }
 
+
+  const handleDownload = () => {
+    if (!invoices || !invoices.length) {
+      toast.error("No invoices to download!");
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Invoices Report", 14, 22);
+    doc.setFontSize(11);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 30);
+
+    const tableColumn = ["Invoice #", "Client", "Issue Date", "Due Date", "Amount", "Status"];
+    const tableRows: any[] = [];
+
+    invoices.forEach((invoice: any) => {
+      const invoiceData = [
+        `INV-${invoice.id.split("-")[0]}`,
+        invoice.client?.name,
+        new Date(invoice.issueDate).toLocaleDateString(),
+        new Date(invoice.dueDate).toLocaleDateString(),
+        `Rs ${invoice.total.toLocaleString()}`,
+        invoice.status,
+      ];
+      tableRows.push(invoiceData);
+    });
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 40,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [255, 215, 0], textColor: 0 },
+      alternateRowStyles: { fillColor: [240, 240, 240] },
+      columnStyles: {
+        4: { halign: "justify" },
+        5: { halign: "justify" },
+      },
+    });
+
+    doc.save("Invoices_Report.pdf");
+  };
+
+
   if(loading) return <InvoicesSkeleton />
 
   return (
     <div className="px-4 py-4 sm:py-6 md:px-6 lg:px-8 animate-fade-in pb-20">
-  <div className="mx-auto mb-6 max-w-6xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient-gold">
-        Invoices
-      </h1>
-      <p className="mt-1 flex items-center gap-2 text-sm sm:text-base text-muted-foreground">
-        <FileText className="h-4 w-4 text-gold" />
-        Manage and track all your invoices
-      </p>
-    </div>
+      <div className="mx-auto mb-6 max-w-6xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient-gold"> Invoices </h1>
+          <p className="mt-1 flex items-center gap-2 text-sm sm:text-base text-muted-foreground">
+            <FileText className="h-4 w-4 text-gold" /> Manage and track all your invoices
+          </p>
+        </div>
+        <Button
+          onClick={() => setShowModal(true)}
+          className="w-full sm:w-auto bg-gradient-gold text-primary-foreground shadow-gold hover:shadow-glow transition">
+          <PlusCircle className="mr-2 h-4 w-4" /> New Invoice
+        </Button>
+      </div>
 
-    <Button
-      onClick={() => setShowModal(true)}
-      className="w-full sm:w-auto bg-gradient-gold text-primary-foreground shadow-gold hover:shadow-glow transition"
-    >
-      <PlusCircle className="mr-2 h-4 w-4" /> New Invoice
-    </Button>
-  </div>
-
-      <InvoiceModel showModal={showModal} setShowModal={setShowModal} />
+      <InvoiceModel showModal={showModal} setShowModal={setShowModal} clients={clients} />
 
       <Card className="mx-auto mb-6 max-w-6xl bg-gradient-card shadow-md border border-border">
         <CardContent className="p-4">
@@ -273,14 +175,13 @@ export default function Invoices() {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border">
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="paid">Paid</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="overdue">Overdue</SelectItem>
-                </SelectContent>
+                  {statusOptions.map((status) => (
+                    <SelectItem key={status.value} value={status.value}> {status.label} </SelectItem>
+                  ))}
+              </SelectContent>
               </Select>
-              <Button variant="outline" className="border-border text-foreground hover:bg-accent/10"> 
-              <Download className="mr-2 h-4 w-4" /> Export 
+              <Button onClick={handleDownload} variant="outline" className="border-border text-foreground hover:bg-accent/10"> 
+                <Download className="mr-2 h-4 w-4" /> Export 
               </Button>
             </div>
           </div>
@@ -288,105 +189,73 @@ export default function Invoices() {
       </Card>
 
       {/* Table */}
-<Card className="mx-auto max-w-6xl bg-gradient-card shadow-lg border border-border overflow-hidden">
-  <CardContent className="p-0">
+      <Card className="mx-auto max-w-6xl bg-gradient-card shadow-lg border border-border overflow-hidden">
+        <CardContent className="p-0">
+          <div className="overflow-x-auto md:overflow-visible">
+            <Table className="w-full text-xs sm:text-sm">
+              {/* TABLE HEADER */}
+              <TableHeader>
+                <TableRow className="bg-muted/40">
+                  {invoiceTableColumns.map((col) => (
+                    <TableHead key={col.key} className={col.className}>
+                      {col.label}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
 
-    {/* Enable scroll only on small screens */}
-    <div className="overflow-x-auto md:overflow-visible">
+              {/* TABLE BODY */}
+              <TableBody>
+                {filteredInvoices?.length ? (
+                  filteredInvoices?.map((invoice: any) => (
+                    <TableRow key={invoice?.id} className="hover:bg-accent/5 transition" >
+                      <TableCell className="font-semibold text-gold whitespace-nowrap"> {`INV-${invoice?.id?.split('-')[0]}`} </TableCell>
+                      <TableCell> <div className="font-semibold text-foreground leading-tight"> {invoice?.client?.name} </div> </TableCell>
+                      <TableCell className="table-cell whitespace-nowrap"> {new Date(invoice?.issueDate).toLocaleDateString()}</TableCell>
+                      <TableCell className="table-cell whitespace-nowrap"> {new Date(invoice?.dueDate).toLocaleDateString()} </TableCell>
+                      <TableCell className="font-bold text-gold whitespace-nowrap"> Rs {invoice?.total.toLocaleString()} </TableCell>
+                      <TableCell> <StatusBadge status={invoice?.status?.toLowerCase()} /> </TableCell>
 
-      <Table className="w-full text-xs sm:text-sm">
-        {/* TABLE HEADER */}
-        <TableHeader>
-          <TableRow className="bg-muted/40">
-            <TableHead className="whitespace-nowrap">Invoice #</TableHead>
-            <TableHead>Client</TableHead>
+                      {/* Actions */}
+                      <TableCell className="text-center">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-gold hover:bg-accent/10 px-2"
+                          onClick={() => {
+                            setSelectedInvoice(invoice);
+                            setShowEditModal(true);
+                          }}>
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-red-500 hover:bg-red-500/10 px-2"
+                          onClick={() => handleDeleteInvoice(invoice?.id)}>
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-48 text-center"> <p className="text-muted-foreground"> No invoices found </p> </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+      </CardContent>
 
-            {/* Hide on mobile */}
-            <TableHead className="hidden sm:table-cell">
-              Issue Date
-            </TableHead>
-            <TableHead className="hidden md:table-cell">
-              Due Date
-            </TableHead>
+      {/* Edit Modal */}
+      <InvoiceEditModal
+        showEditModal={showEditModal}
+        setShowEditModal={setShowEditModal}
+        invoice={selectedInvoice}
+      />
+    </Card>
 
-            <TableHead>Amount</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-center">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-
-        {/* TABLE BODY */}
-        <TableBody>
-          {filteredInvoices?.length ? (
-            filteredInvoices?.map((invoice: any) => (
-              <TableRow
-                key={invoice?.id}
-                className="hover:bg-accent/5 transition"
-              >
-                {/* Invoice Number */}
-                <TableCell className="font-semibold text-gold whitespace-nowrap">
-                  {`INV-${invoice?.id?.split('-')[0]}`}
-                </TableCell>
-
-                {/* Client */}
-                <TableCell>
-                  <div className="font-semibold text-foreground leading-tight">
-                    {invoice?.client?.name}
-                  </div>
-                  {/* <div className="text-xs text-muted-foreground hidden sm:block">
-                    {invoice.client.company}
-                  </div> */}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell whitespace-nowrap"> {new Date(invoice?.issueDate).toLocaleDateString()}</TableCell>
-                <TableCell className="hidden md:table-cell whitespace-nowrap"> {new Date(invoice?.dueDate).toLocaleDateString()} </TableCell>
-                <TableCell className="font-bold text-gold whitespace-nowrap"> Rs {invoice?.total.toLocaleString()} </TableCell>
-                <TableCell> <StatusBadge status={invoice?.status?.toLowerCase()} /> </TableCell>
-
-                {/* Actions */}
-                <TableCell className="text-center">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-gold hover:bg-accent/10 px-2"
-                    onClick={() => {
-                      setSelectedInvoice(invoice);
-                      setShowEditModal(true);
-                    }}>
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-red-500 hover:bg-red-500/10 px-2"
-                    onClick={() => handleDeleteInvoice(invoice?.id)}>
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={7} className="h-48 text-center">
-                <p className="text-muted-foreground">
-                  No invoices found
-                </p>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-
-    </div>
-  </CardContent>
-
-  {/* Edit Modal */}
-  <InvoiceEditModal
-    showEditModal={showEditModal}
-    setShowEditModal={setShowEditModal}
-    invoice={selectedInvoice}
-  />
-</Card>
-
-    </div>
+  </div>
   )
 }

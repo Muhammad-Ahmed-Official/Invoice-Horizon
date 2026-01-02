@@ -5,7 +5,7 @@ import { TrendingUp, DollarSign, FileText, Clock, AlertCircle } from "lucide-rea
 export default function DashboardSkeleton() {
   return (
     <div className="min-h-screen bg-gradient-dark">
-      <div className="p-8 max-w-7xl mx-auto animate-fade-in">
+      <div className="p-8 max-w-6xl mx-auto animate-fade-in">
         {/* Header */}
         <div className="mb-10 flex items-center justify-between">
           <div>

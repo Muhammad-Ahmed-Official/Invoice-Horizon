@@ -17,6 +17,18 @@ export const ALL_INVOICES = gql`
     }
 `
 
+
+export const INVOICE_STATS = gql`
+    query {
+        stats {
+            totalRevenue
+            paidAmount
+            pendingAmount
+            overdueAmount
+        }
+    }
+`
+
 export const INVOICE_MUTATION = gql`
     mutation CreateInvoice($input: CreateInvoiceInput!, $clientId: String!) {
         createInvoice(createInvoiceInput: $input, clientId:$clientId) {

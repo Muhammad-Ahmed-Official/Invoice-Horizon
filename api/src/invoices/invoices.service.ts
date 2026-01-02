@@ -40,6 +40,40 @@ export class InvoicesService {
     }
   };
 
+  async findStats() {
+    const inoices = await this.prisma.invoice.findMany({
+      select: {
+        total: true,
+        status: true,
+      },
+    });
+
+    const stats = {
+      totalRevenue: 0,
+      paidAmount: 0,
+      pendingAmount: 0,
+      overdueAmount: 0,
+    };
+
+    for(const inv of inoices){
+      stats.totalRevenue += inv.total;
+
+      if (inv.status === 'PAID') {
+        stats.paidAmount += inv.total;
+      }
+
+      if (inv.status === 'PENDING') {
+        stats.pendingAmount += inv.total;
+      }
+
+      if (inv.status === 'OVERDUE') {
+        stats.overdueAmount += inv.total;
+      }
+    }
+
+    return stats;
+  };
+
 
 
   async update(id: string, updateInvoiceInput: UpdateInvoiceInput) {
@@ -87,8 +121,3 @@ export class InvoicesService {
   };
 
 }
-
-
-// findOne(id: number) {
-//   return `This action returns a #${id} invoice`;
-// }

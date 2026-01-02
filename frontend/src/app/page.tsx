@@ -1,15 +1,22 @@
 'use client'
 
 import { useAuth } from "@/redux/authProvider";
-import { redirect } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
-  const {user}  = useAuth();
-  // console.log(user?.length);
-  if(user?.length){
-    redirect("/home");
-  } else {
-    redirect("sign-in")
-  }
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
+  useEffect(() => {
+    if (loading) return;
+
+    if (user?.email) {
+      router.replace("/home");
+    } else {
+      router.replace("/sign-in");
+    }
+  }, [user, loading, router]);
+
+  return null;
 }

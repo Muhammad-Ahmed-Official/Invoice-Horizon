@@ -134,28 +134,7 @@ export default function CreateClientModel({ clientModel, setClientModel }: Model
         {errors.role && ( <p className="text-xs text-red-500"> {errors.role.message as string} </p> )}
       </div>
 
-      {/* Company */}
-      {/* <div className="space-y-1.5 md:space-y-2">
-        <Label htmlFor="company" className="text-sm font-medium">
-          Company
-        </Label>
-        <div className="relative">
-          <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
-          <Input
-            id="company"
-            type="text"
-            placeholder="Acme Inc."
-            className="pl-9 md:pl-10 h-9 md:h-10 text-sm md:text-base"
-            {...register('company')}
-          />
-        </div>
-        {errors.company && (
-          <p className="text-xs md:text-sm text-red-500 mt-1">
-            {errors.company.message}
-          </p>
-        )}
-      </div> */}
-
+      
       {/* Email */}
       <div className="space-y-1.5 md:space-y-2">
         <Label htmlFor="email" className="text-sm font-medium">

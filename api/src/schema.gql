@@ -77,6 +77,13 @@ type InvoiceResponse {
   total: Int!
 }
 
+type InvoiceStats {
+  overdueAmount: Float!
+  paidAmount: Float!
+  pendingAmount: Float!
+  totalRevenue: Float!
+}
+
 type LoginResponse {
   user: SignupResponse!
 }
@@ -109,6 +116,7 @@ type Query {
   getSetting: SettingResponse!
   invoices: [InvoiceResponse!]!
   me: SignupResponse
+  stats: InvoiceStats!
 }
 
 type Response {

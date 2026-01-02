@@ -5,6 +5,7 @@ import { CreateInvoiceInput } from './dto/create-invoice.input';
 import { UpdateInvoiceInput } from './dto/update-invoice.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { InvoiceStats } from './entities/invoiceStatsResponse.entity';
 
 @Resolver(() => InvoiceResponse)
 export class InvoicesResolver {
@@ -21,10 +22,10 @@ export class InvoicesResolver {
     return this.invoicesService.findAll();
   }
 
-  // @Query(() => InvoiceResponse, { name: 'invoice' })
-  // findOne(@Args('id', { type: () => Int }) id: number) {
-  //   return this.invoicesService.findOne(id);
-  // }
+  @Query(() => InvoiceStats, { name: 'stats' })
+  findStats() {
+    return this.invoicesService.findStats();
+  }
 
   @Mutation(() => InvoiceResponse)
   updateInvoice(@Args('updateInvoiceInput') updateInvoiceInput: UpdateInvoiceInput) {

@@ -175,6 +175,11 @@
     background-color: hsl(var(--background) / 0.9);
     border: 1px solid hsl(var(--border) / 0.3);
   }
+
+  .date-white::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+  }
 }
 
 @layer utilities {

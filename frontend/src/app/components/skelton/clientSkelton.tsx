@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { User, Search, Building, Mail, Phone } from "lucide-react";
+import { Card, CardContent, CardHeader } from "../ui/card";
+import { Search,  Mail, Phone } from "lucide-react";
 
 export default function ClientsSkeleton() {
   return (

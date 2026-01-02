@@ -233,39 +233,7 @@ export default function Settings() {
       </CardContent>
     </Card>
 
-    <Card className="bg-gradient-card border border-border shadow-md">
-      <CardHeader className="p-4 sm:p-6">
-        <CardTitle className="text-base sm:text-lg md:text-xl font-semibold text-foreground">
-          Company Logo
-        </CardTitle>
-        <CardDescription className="text-xs sm:text-sm text-muted-foreground mt-1">
-          Upload your company logo to appear on invoices
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="p-4 sm:p-6 pt-0">
-        <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-start">
-          <img
-            src="https://mgx-backend-cdn.metadl.com/generate/images/864210/2025-12-26/531c05d0-3ac2-46d8-8420-6a21565550fd.png"
-            alt="Company Logo"
-            className="h-16 w-16 sm:h-20 sm:w-20 rounded border border-border object-cover shadow-glow self-start"
-          />
-
-          <div className="flex-1">
-            <Button
-              type="button"
-              variant="outline"
-              className="border-gold text-gold hover:bg-gold/10 h-9 sm:h-10 text-xs sm:text-sm w-full sm:w-auto"
-            >
-              Upload Logo
-            </Button>
-            <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-muted-foreground">
-              Recommended: 200×200px square
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    
 
     <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-4 sm:pt-6">
       <Button
