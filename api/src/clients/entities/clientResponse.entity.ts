@@ -24,7 +24,3 @@ export class ClientResponse {
   @Field(() => clientType)
   role: clientType;
 }
-
-// @Field(() => String)
-// @IsString()
-// company: string
