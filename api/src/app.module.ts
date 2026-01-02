@@ -26,7 +26,7 @@ import { InvoicesModule } from './invoices/invoices.module';
       formatError: (formattedError: GraphQLFormattedError, error: unknown): GraphQLFormattedError => {
           return {
             message: formattedError.message,
-            path: formattedError.path, // can be undefined
+            path: formattedError?.path, 
             extensions: {
               statusCode: (error as any)?.extensions?.exception?.status || 500,
               timestamp: new Date().toISOString(),
@@ -34,7 +34,6 @@ import { InvoicesModule } from './invoices/invoices.module';
           };
         },
       sortSchema: true,
-      // playground: true,
       buildSchemaOptions: {
         numberScalarMode: 'integer',
       },

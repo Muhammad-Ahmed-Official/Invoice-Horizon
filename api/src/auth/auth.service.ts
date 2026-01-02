@@ -112,7 +112,7 @@ export class AuthService {
 
         const token = this.jwtService.sign({ sub: userId }, { expiresIn: '15m' });
 
-        const resetLink = `${process.env.RESET_LINK}/reset-password?token=${token}`;
+        const resetLink = `${process.env.ALLOWED_ORIGIN}/reset-password?token=${token}`;
         // console.log(resetLink);
 
         const emailService = new EmailService(this.configService);
