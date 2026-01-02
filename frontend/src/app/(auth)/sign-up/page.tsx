@@ -143,10 +143,10 @@ export default function SignUpForm() {
           </form>
 
           <div className="pt-8 border-t border-border/60 flex items-center justify-center gap-2 text-sm">
-            <span className="text-muted-foreground font-medium">Need system access?</span>
+            <span className="text-muted-foreground font-medium">Alredy have an account?</span>
               <Link href="/sign-in">
               <button className="text-gold cursor-pointer font-bold hover:text-gold/80 transition-colors">
-                Request Account
+                Request SignIn
               </button>
               </Link>
           </div>

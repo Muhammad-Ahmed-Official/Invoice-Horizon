@@ -128,10 +128,10 @@ export default function SignInForm() {
           </form>
 
           <div className="pt-8 border-t border-border/60 flex items-center justify-center gap-2 text-sm">
-            <span className="text-muted-foreground font-medium">Need system access?</span>
+            <span className="text-muted-foreground font-medium">Don't have an account?</span>
               <Link href="/sign-up">
               <button className="text-gold cursor-pointer font-bold hover:text-gold/80 transition-colors">
-                Request Account
+                Create Account
               </button>
               </Link>
           </div>

@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Invoice Horizon",
   description: "Ignite your business flow.",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
