@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import logo from "../../../public/logo2.png"
 import Image from 'next/image';
 import { useMutation } from '@apollo/client/react';
@@ -23,6 +23,7 @@ const navigation = [
 export default function Sidebar() {
   const { setUser } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
 
   const [logoutMutation] = useMutation(LOGOUT_MUTATION)
 
@@ -31,6 +32,7 @@ export default function Sidebar() {
       async () => {
         await logoutMutation()
         setUser(null);
+        router.push('/'); 
       },
       (error) => toast.error(error?.message)
     );

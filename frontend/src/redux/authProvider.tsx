@@ -14,10 +14,10 @@ export function AuthProvider({children}: {children:ReactNode}){
     useEffect(() => {
       if (loading) return;
       if (!data?.me) return;
-
-      setUser(data.me);
+      
+      setUser(data?.me);
     }, [data, loading]);
-
+    
   return (
     <AuthContext.Provider value={{ user, loading, setUser }}>
       {children}

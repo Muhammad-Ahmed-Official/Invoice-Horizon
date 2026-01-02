@@ -10,7 +10,6 @@ export default function HomePage() {
 
   useEffect(() => {
     if (loading) return;
-
     if (user?.email) {
       router.replace("/home");
     } else {
