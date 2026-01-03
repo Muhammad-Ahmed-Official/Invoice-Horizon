@@ -20,6 +20,7 @@ import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
 import { ALL_CLIENTS } from '@/graphql/client';
 import { GetClientTypes } from '@/features/auth/types/client.Types';
+import { useAuth } from '@/redux/authProvider';
 
 type InvoiceTableColumn = {
 key: string;
@@ -32,6 +33,7 @@ const invoiceTableColumns: InvoiceTableColumn[] = [
 { key: "client", label: "Client" },
 { key: "issueDate", label: "Issue Date", className: "table-cell" },
 { key: "dueDate", label: "Due Date", className: "table-cell" },
+{ key: "item", label: "Item", className: "table-cell" },
 { key: "amount", label: "Amount" },
 { key: "status", label: "Status" },
 { key: "action", label: "Action", className: "text-center" },
@@ -60,6 +62,7 @@ const matchesSearch =
   const matchesStatus = statusFilter === 'all' || invoice?.status.toLowerCase() === statusFilter;
   return matchesSearch && matchesStatus;
 });
+
 
 const { data, loading } = useQuery<getInvoiceData>(ALL_INVOICES, {
   fetchPolicy: "cache-first",
@@ -132,6 +135,9 @@ useEffect(() => {
     doc.save("Invoices_Report.pdf");
   };
 
+  const { user } = useAuth();
+  const tax = user && user?.companyInfo['taxRate'];
+
 
   if(loading) return <InvoicesSkeleton />
 
@@ -151,7 +157,7 @@ useEffect(() => {
         </Button>
       </div>
 
-      <InvoiceModel showModal={showModal} setShowModal={setShowModal} clients={clients} />
+      <InvoiceModel showModal={showModal} setShowModal={setShowModal} clients={clients} tax={tax} />
 
       <Card className="mx-auto mb-6 max-w-6xl bg-gradient-card shadow-md border border-border">
         <CardContent className="p-4">
@@ -213,6 +219,7 @@ useEffect(() => {
                       <TableCell> <div className="font-semibold text-foreground leading-tight"> {invoice?.client?.name} </div> </TableCell>
                       <TableCell className="table-cell whitespace-nowrap"> {new Date(invoice?.issueDate).toLocaleDateString()}</TableCell>
                       <TableCell className="table-cell whitespace-nowrap"> {new Date(invoice?.dueDate).toLocaleDateString()} </TableCell>
+                      <TableCell className="table-cell whitespace-nowrap">  {invoice.items.map((item: any) => item.description).join(", ")} </TableCell>
                       <TableCell className="font-bold text-gold whitespace-nowrap"> Rs {invoice?.total.toLocaleString()} </TableCell>
                       <TableCell> <StatusBadge status={invoice?.status?.toLowerCase()} /> </TableCell>
 

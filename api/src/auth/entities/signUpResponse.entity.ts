@@ -5,12 +5,22 @@ import { Role } from '../../guards/roles/roles.enum';
 registerEnumType(Role, { name: 'Role' });
 
 @ObjectType()
+class CompanyInfoRes {
+  @Field(() => Int)
+  taxRate?: number;
+}
+
+@ObjectType()
 export class SignupResponse {
   @Field(() =>  ID)
   id: string;
 
   @Field()
   name: string;
+
+  @Field(() => CompanyInfoRes)
+  companyInfo?: CompanyInfoRes; 
+
 
   @Field()
   email: string;

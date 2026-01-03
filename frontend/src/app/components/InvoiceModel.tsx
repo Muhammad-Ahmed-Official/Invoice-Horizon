@@ -19,7 +19,7 @@ import { useMutation } from '@apollo/client/react';
 import { ALL_INVOICES, INVOICE_MUTATION } from '@/graphql/invoice';
 
 
-export default function InvoiceModel({showModal, setShowModal, clients} : any) {
+export default function InvoiceModel({showModal, setShowModal, clients, tax} : any) {
   const {register, control, reset, handleSubmit, watch, formState: { isSubmitting, errors } } = useForm({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
@@ -40,7 +40,7 @@ export default function InvoiceModel({showModal, setShowModal, clients} : any) {
     const items = watch("items") as any;
 
     const subtotal = items.reduce((sum:any, item:any) => sum + item.quantity * item.rate, 0);
-    const tax = subtotal * 0.18;
+    const totalTax = subtotal * (tax / 100);
     const total = subtotal + tax;
 
     const [invoiceMutation] = useMutation<any>(INVOICE_MUTATION, {
@@ -307,8 +307,8 @@ export default function InvoiceModel({showModal, setShowModal, clients} : any) {
                 <div className="text-muted-foreground">Subtotal</div>
                 <div className="text-right font-medium">Rs {subtotal}</div>
                 
-                <div className="text-muted-foreground">Tax (18%)</div>
-                <div className="text-right font-medium">Rs {tax}</div>
+                <div className="text-muted-foreground">Tax {tax}</div>
+                <div className="text-right font-medium">Rs {totalTax}</div>
               </div>
               
               <div className="border-t border-dashed my-2"></div>

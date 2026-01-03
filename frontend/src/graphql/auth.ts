@@ -5,6 +5,9 @@ export const ME_QUERY = gql`
     me {
       id
       email
+      companyInfo {
+        taxRate
+      }
     }
   }
 `;

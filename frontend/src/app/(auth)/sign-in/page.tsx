@@ -41,7 +41,7 @@ export default function SignInForm() {
           },
         },
       });
-      router.push('/companyInfo');
+      router.push('/home');
       },
       (error:any) => toast.error(error.message)
     )

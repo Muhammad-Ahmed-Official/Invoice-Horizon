@@ -8,10 +8,11 @@ import { SignupResponse } from './entities/signUpResponse.entity';
 import { LoginUserInput } from './dto/login-user';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Response } from './entities/response.entity';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Resolver('auth')
 export class AuthResolver {
-    constructor(private readonly authService: AuthService){}
+    constructor(private readonly authService: AuthService, private readonly prisma: PrismaService){}
 
     @Mutation(() => SignupResponse)
     async signUp(@Args('signupUserInput') signupUserInput: SignupUserInput){
@@ -68,9 +69,22 @@ export class AuthResolver {
 
     @Query(() => SignupResponse, { nullable: true })
     @UseGuards(JwtAuthGuard)
-    me(@Context() ctx) {
-        return ctx.req.user;
-    }
+    async me(@Context() ctx) {
+        const userId = ctx.req.user.id;
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            include: {
+            companyInfo: {
+                select: { taxRate: true },
+            },
+            },
+        });
 
+        return {
+            ...user,
+            companyInfo: user?.companyInfo?.[0] ?? null, // 👈 FIX
+        };
+
+    }
     
 }
