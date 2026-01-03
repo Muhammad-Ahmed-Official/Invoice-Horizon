@@ -33,6 +33,9 @@ export class InvoiceResponse {
   @Field(() => String)
   clientId: string;
 
+  // @Field(() => String)
+  // userId: string
+
   @Field(() => ClientRes)
   client: ClientRes; 
 

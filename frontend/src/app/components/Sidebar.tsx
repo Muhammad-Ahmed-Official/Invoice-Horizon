@@ -12,6 +12,7 @@ import logo from "../../../public/logo2.png"
 import Image from 'next/image';
 import { useMutation } from '@apollo/client/react';
 import { LOGOUT_MUTATION } from '@/graphql/auth';
+// import { revalidatePath } from 'next/cache';
 
 const navigation = [
   { name: 'Dashboard', href: '/home', icon: Home },
@@ -32,7 +33,7 @@ export default function Sidebar() {
       async () => {
         await logoutMutation()
         setUser(null);
-        router.push('/'); 
+        router.push('/sign-in'); 
       },
       (error) => toast.error(error?.message)
     );

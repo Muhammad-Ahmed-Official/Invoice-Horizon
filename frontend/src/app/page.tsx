@@ -1,21 +1,15 @@
-'use client'
+'use server'
 
-import { useAuth } from "@/redux/authProvider";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function HomePage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+export default async function HomePage() {
+  const cookieStore = await cookies(); 
+  const token = cookieStore.get('access_token')?.value;
+  if(token){
+    redirect("/home");
+  } else {
+    redirect("/sign-in");
+  }
 
-  useEffect(() => {
-    if (loading) return;
-    if (user?.email) {
-      router.replace("/home");
-    } else {
-      router.replace("/sign-in");
-    }
-  }, [user, loading, router]);
-
-  return null;
 }

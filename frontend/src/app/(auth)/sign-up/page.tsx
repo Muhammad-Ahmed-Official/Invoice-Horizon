@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Mail, Lock, EyeOff, Eye, Loader, ArrowRight } from "lucide-react"
+import { Mail, Lock, EyeOff, Eye, Loader, ArrowRight, User } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 import { useState } from "react"
 import { Input } from "@/app/components/ui/input"
@@ -72,7 +72,7 @@ export default function SignUpForm() {
               <div className="space-y-2">
                 <Label htmlFor="email">Username</Label>
                 <div className="relative group">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-gold transition-colors" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-gold transition-colors" />
                   <Input
                     id="name"
                     type="text"
@@ -90,7 +90,7 @@ export default function SignUpForm() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="manager@restaurant.com"
+                    placeholder="john@restaurant.com"
                     className="pl-10 pr-10 h-12 bg-white text-black border-none outline-none rounded-md"
                     {...register("email")}
                   />

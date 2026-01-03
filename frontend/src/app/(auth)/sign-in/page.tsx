@@ -70,7 +70,7 @@ export default function SignInForm() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="manager@restaurant.com"
+                    placeholder="john@restaurant.com"
                     className="pl-10 pr-10 h-12 bg-white text-black border-none outline-none rounded-md"
                     {...register("email")}
                   />

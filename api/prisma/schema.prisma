@@ -21,6 +21,8 @@ model User {
   updatedAt   DateTime   @updatedAt
 
   companyInfo  CompanyInfo[]
+  client  Client[]
+  invoices    Invoice[]
 }
 
 enum Role {
@@ -49,6 +51,9 @@ model Client {
   phone       String 
   role        ClientType   @default(CUSTOMER)
 
+  userId     String     
+  user       User       @relation(fields: [userId], references: [id])
+
   invoices  Invoice[]
 }
 
@@ -66,6 +71,9 @@ model Invoice {
   status    statusType
 
   items      InvoiceItem[]
+
+  userId     String
+  user       User         @relation(fields: [userId], references: [id])
   
   clientId   String
   client     Client        @relation(fields: [clientId], references: [id])

@@ -208,16 +208,16 @@ export type ClientOrderByWithRelationInput = {
 export type ClientWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
+  userId?: string
   AND?: Prisma.ClientWhereInput | Prisma.ClientWhereInput[]
   OR?: Prisma.ClientWhereInput[]
   NOT?: Prisma.ClientWhereInput | Prisma.ClientWhereInput[]
   name?: Prisma.StringFilter<"Client"> | string
   phone?: Prisma.StringFilter<"Client"> | string
   role?: Prisma.EnumClientTypeFilter<"Client"> | $Enums.ClientType
-  userId?: Prisma.StringFilter<"Client"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   invoices?: Prisma.InvoiceListRelationFilter
-}, "id" | "email">
+}, "id" | "email" | "userId">
 
 export type ClientOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

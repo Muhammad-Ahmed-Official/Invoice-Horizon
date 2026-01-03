@@ -7,13 +7,14 @@ import { Prisma } from '../generated/prisma/client';
 @Injectable()
 export class InvoicesService {
   constructor(private readonly prisma: PrismaService){}
-  async create(createInvoiceInput: CreateInvoiceInput, clientId: string) {
+  async create(createInvoiceInput: CreateInvoiceInput, clientId: string, userId:string) {
     try { 
       const { items, ...invoiceData } = createInvoiceInput;
       const invoice = await this.prisma.invoice.create({
         data: {
           ...invoiceData,
           client: { connect: { id: clientId } },
+          user: { connect: { id: userId } },
           items: {
             create: items.map(item => ({
               description: item.description,
@@ -31,17 +32,18 @@ export class InvoicesService {
   };
 
 
-  async findAll() {
+  async findAll(userId: string) {
     try {
-      const allClients = await this.prisma.invoice.findMany({ include: { client: { select: { name: true } }, items: true } });
+      const allClients = await this.prisma.invoice.findMany({ where: { userId: userId }, include: { client: { select: { name: true } }, items: true } });
       return allClients;
     } catch (error) {
       throw new InternalServerErrorException("Failed to get invoices");
     }
   };
 
-  async findStats() {
+  async findStats(userId:string) {
     const inoices = await this.prisma.invoice.findMany({
+      where: { userId: userId },
       select: {
         total: true,
         status: true,

@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { ClientsService } from './clients.service';
 import { ClientResponse } from './entities/clientResponse.entity';
 import { CreateClientInput } from './dto/create-client.input';
@@ -12,14 +12,14 @@ export class ClientsResolver {
 
   @UseGuards(JwtAuthGuard)
   @Mutation(() => ClientResponse)
-  createClient(@Args('createClientInput') createClientInput: CreateClientInput) {
-    return this.clientsService.create(createClientInput);
+  createClient(@Args('createClientInput') createClientInput: CreateClientInput, @Context() ctx) {
+    return this.clientsService.create(createClientInput, ctx.req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Query(() => [ClientResponse], { name: 'clients' })
-  findAll() {
-    return this.clientsService.findAll();
+  findAll(@Context() ctx) {
+    return this.clientsService.findAll(ctx.req.user.id);
   }
 
 

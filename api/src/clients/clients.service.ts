@@ -7,18 +7,18 @@ import { Prisma } from '../generated/prisma/client';
 @Injectable()
 export class ClientsService {
   constructor(private readonly prisma:PrismaService){}
-  async create(createClientInput: CreateClientInput) {
+  async create(createClientInput: CreateClientInput, userId: string) {
     try {
-      const client = await this.prisma.client.create({ data: { ...createClientInput }});
+      const client = await this.prisma.client.create({ data: { ...createClientInput, user: { connect: { id: userId } }, }});
       return client;
     } catch (error) {
       throw new InternalServerErrorException("Failed to create client");
     }
   };
 
-  async findAll() {
+  async findAll(userId: string) {
     try {
-      const allClients = await this.prisma.client.findMany();
+      const allClients = await this.prisma.client.findMany({ where: { userId: userId } });
       return allClients;
     } catch (error) {
        throw new InternalServerErrorException("Failed to get clients");
